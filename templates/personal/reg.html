@@ -1,54 +1,43 @@
+{% extends 'father/index.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>超市</title>
-    <meta name="description" content="">
-    <meta name="keywords" content="">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-    <meta name="renderer" content="webkit">
-    <meta http-equiv="Cache-Control" content="no-siteapp"/>
-    <link href="{% static 'css/amazeui.min.css' %}" rel="stylesheet" type="text/css"/>
-    <link href="{% static 'css/style.css' %}" rel="stylesheet" type="text/css"/>
-    <script src="{% static 'js/jquery-1.10.2.min.js' %}"></script>
-    <script src="{% static 'js/time.js' %}"></script>
-</head>
-<body>
-<header data-am-widget="header" class="am-header am-header-default sq-head ">
-    <div class="am-header-left am-header-nav">
-        <a href="javascript:history.back()" class="">
-            <i class="am-icon-chevron-left"></i>
-        </a>
-    </div>
-    <h1 class="am-header-title">
-        <a href="" class="">注册</a>
-    </h1>
-</header>
-<div style="height: 49px;"></div>
-<!--<div class="login-logo">
-    <img src="images/logo.png" />
-</div>-->
-<div style="height: 3rem;"></div>
-<form action="{% url 'user:注册' %}" method="post">
-    {% csrf_token %}
-    {% if data %}
-        <input type="text" name="account" placeholder="{{ errors.account.0 }}" class="login-name">
-        <input type="password" name="password1" placeholder="{{ errors.password1.0 }}" class="login-password">
-        <input type="password" name="password2" placeholder="{{ errors.password2.0 }}" class="login-name">
-    {% else %}
-        <input type="text" name="account" placeholder="请输入手机号" class="login-name">
-        <input type="password" name="password1" placeholder="请输入密码" class="login-password">
-        <input type="password" name="password2" placeholder="确认密码" class="login-name">
-    {% endif %}
-    <input type="submit" class="login-btn" value="立即注册">
-</form>
 
-<div class="agree">
-    <input type="checkbox" name="checkbox" value="同意" checked="">&nbsp;同意
-    <a href="" class="xy">《用户协议》</a>
-    <div class="r-login">已有账号，请<a href="{% url 'user:登录' %}" class="l-login">登录</a></div>
-</div>
-</body>
-</html>
+{% block header %}
+    <header data-am-widget="header" class="am-header am-header-default sq-head ">
+        <div class="am-header-left am-header-nav">
+            <a href="javascript:history.back()" class="">
+                <i class="am-icon-chevron-left"></i>
+            </a>
+        </div>
+        <h1 class="am-header-title">
+            <a href="" class="">注册账户</a>
+        </h1>
+    </header>
+{% endblock %}
+
+{% block content %}
+    <div style="height: 49px;"></div>
+    <div style="height: 3rem;"></div>
+    <form action="{% url 'user:注册' %}" method="post">
+        {% csrf_token %}
+        {% if data %}
+            <input type="text" name="account" placeholder="{{ errors.account.0 }}" class="login-name">
+            <input type="password" name="password1" placeholder="{{ errors.password1.0 }}" class="login-password">
+            <input type="password" name="password2" placeholder="{{ errors.password2.0 }}" class="login-name">
+        {% else %}
+            <input type="text" name="account" placeholder="请输入手机号" class="login-name">
+            <input type="password" name="password1" placeholder="请输入密码" class="login-password">
+            <input type="password" name="password2" placeholder="确认密码" class="login-name">
+        {% endif %}
+        <input type="submit" class="login-btn" value="立即注册">
+    </form>
+    <div class="agree">
+        <input type="checkbox" name="checkbox" value="同意" checked="">&nbsp;同意
+        <a href="" class="xy">《用户协议》</a>
+        <div class="r-login">已有账号，请<a href="{% url 'user:登录' %}" class="l-login">登录</a></div>
+    </div>
+{% endblock %}
+
+
+
+
+

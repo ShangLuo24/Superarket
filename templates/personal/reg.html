@@ -23,10 +23,18 @@
             <input type="text" name="account" placeholder="{{ errors.account.0 }}" class="login-name">
             <input type="password" name="password1" placeholder="{{ errors.password1.0 }}" class="login-password">
             <input type="password" name="password2" placeholder="{{ errors.password2.0 }}" class="login-name">
+            <div class="yzm" style="margin-top: 1.5rem;">
+	    	<input type="text" class="reg-yzm" placeholder="输入验证码" />
+	    	<input type="button" class="yzm-hq" value="获取验证码" />
+	    </div>
         {% else %}
             <input type="text" name="account" placeholder="请输入手机号" class="login-name">
             <input type="password" name="password1" placeholder="请输入密码" class="login-password">
             <input type="password" name="password2" placeholder="确认密码" class="login-name">
+            <div class="yzm" style="margin-top: 1.5rem;">
+	    	<input type="text" class="reg-yzm" placeholder="输入验证码" />
+	    	<input type="button" class="yzm-hq" value="获取验证码" />
+	    </div>
         {% endif %}
         <input type="submit" class="login-btn" value="立即注册">
     </form>
@@ -35,6 +43,12 @@
         <a href="" class="xy">《用户协议》</a>
         <div class="r-login">已有账号，请<a href="{% url 'user:登录' %}" class="l-login">登录</a></div>
     </div>
+{% endblock %}
+
+{% block food_jss %}
+    <script>
+        $
+    </script>
 {% endblock %}
 
 

@@ -5,6 +5,7 @@ Superarket : 主文件
 shoppingTrolley : 购物车项目文件
 orderForm : 订单项目文件
 个人中心：{
+/index.html         首页
 /member.html， 个人中心
 /infor.html          个人资料
 /gladdress.html  收获地址

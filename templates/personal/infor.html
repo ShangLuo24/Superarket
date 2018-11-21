@@ -19,7 +19,9 @@
 
 {% block content %}
     <div style="height: 49px;"></div>
-    <form action="" method="post">
+    {#    {% if data %}#}
+    <form action="{% url 'user:个人信息' %}" method="post">
+        {% csrf_token %}
         <ul class="safty1">
             <li>
                 <a href="">
@@ -31,44 +33,112 @@
             </li>
             <li>
                 <i>昵称</i>
-                <input type="text" class="infor-tele" placeholder="默契"/>
+                <input type="text" class="infor-tele" name="nickname" value="{{ data.nickname }}" placeholder="昵称"/>
             </li>
             <li>
                 <i>性别</i>
                 <i class="infor-tele">
                     <label class="am-radio-inline">
-                        <input type="radio" name="radio10" checked="checked" value="1" data-am-ucheck>男
+                        <input type="radio" name="sex" checked="checked" value="1" data-am-ucheck>男
                     </label>
                     <label class="am-radio-inline">
-                        <input type="radio" name="radio10" value="1" data-am-ucheck>女
+                        <input type="radio" name="sex" value="2" data-am-ucheck>女
                     </label>
                 </i>
             </li>
             <li>
                 <i>生日</i>
-                <input type="text" class="infor-tele" placeholder="出生日期"/>
+                <input type="date" class="infor-tele" name="birthday" value="{{ data.birthday }}" placeholder="出生日期"/>
             </li>
         </ul>
         <div style="height: 10px; background: #efefef;"></div>
         <ul class="safty1">
             <li>
                 <i>学校</i>
-                <input type="text" class="infor-tele" placeholder="就读于哪个学校"/>
+                <input type="text" class="infor-tele" name="school" value="{{ data.school }}" placeholder="就读于哪个学校"/>
             </li>
             <li>
                 <i>位置</i>
-                <input type="text" class="infor-tele" placeholder="详细地址"/>
+                <input type="text" class="infor-tele" name="location" value="{{ data.location }}" placeholder="详细地址"/>
             </li>
             <li>
                 <i>故乡</i>
-                <input type="text" class="infor-tele" placeholder="来自哪里"/>
+                <input type="text" class="infor-tele" name="nativePlace" value="{{ data.nativePlace }}"
+                       placeholder="来自哪里"/>
             </li>
             <li>
                 <i>手机</i>
-                <input type="text" class="infor-tele" placeholder="13012345678"/>
+                <input type="text" class="infor-tele" name="telephone" value="{{ data.telephone }}"
+                       placeholder="13012345678"/>
             </li>
         </ul>
         <input type="submit" class="login-btn" value="确认提交">
     </form>
+    {#        {% else %}#}
+    {#        <form action="{% url 'user:个人信息' %}" method="post">#}
+    {#        {% csrf_token %}#}
+    {#        <ul class="safty1">#}
+    {#            <li>#}
+    {#                <a href="">#}
+    {#                    <i style="margin-top: 25px;">头像</i>#}
+    {#                    <div class="infor-pic">#}
+    {#                        <img src="{% static 'images/infortx.png' %}"/>#}
+    {#                    </div>#}
+    {#                </a>#}
+    {#            </li>#}
+    {#            <li>#}
+    {#                <i>昵称</i>#}
+    {#                <input type="text" class="infor-tele" name="nickname" value="{{ errors.nickname.0 }}" placeholder="请输入昵称"/>#}
+    {#            </li>#}
+    {#            <li>#}
+    {#                <i>性别</i>#}
+    {#                <i class="infor-tele">#}
+    {#                    {% if one.sex == 1 %}#}
+    {#                        <label class="am-radio-inline">#}
+    {#                            <input type="radio" name="sex" checked="" value="1" data-am-ucheck>男#}
+    {#                        </label>#}
+    {#                        <label class="am-radio-inline">#}
+    {#                            <input type="radio" name="sex" value="2" data-am-ucheck>女#}
+    {#                        </label>#}
+    {#                    {% else %}#}
+    {#                        <label class="am-radio-inline">#}
+    {#                            <input type="radio" name="sex" value="1" data-am-ucheck>男#}
+    {#                        </label>#}
+    {#                        <label class="am-radio-inline">#}
+    {#                            <input type="radio" name="sex" checked="checked" value="2" data-am-ucheck>女#}
+    {#                        </label>#}
+    {#                    {% endif %}#}
+    {#                </i>#}
+    {#            </li>#}
+    {#            <li>#}
+    {#                <i>生日</i>#}
+    {#                <input type="date" class="infor-tele" name="birthday" value="{{ errors.birthday.0 }}"#}
+    {#                       placeholder="出生日期"/>#}
+    {#            </li>#}
+    {#        </ul>#}
+    {#        <div style="height: 10px; background: #efefef;"></div>#}
+    {#        <ul class="safty1">#}
+    {#            <li>#}
+    {#                <i>学校</i>#}
+    {#                <input type="text" class="infor-tele" name="school" value="{{ errors.school.0 }}" placeholder="就读于哪个学校"/>#}
+    {#            </li>#}
+    {#            <li>#}
+    {#                <i>位置</i>#}
+    {#                <input type="text" class="infor-tele" name="location" value="{{ errors.location.0 }}" placeholder="详细地址"/>#}
+    {#            </li>#}
+    {#            <li>#}
+    {#                <i>故乡</i>#}
+    {#                <input type="text" class="infor-tele" name="nativePlace" value="{{ errors.nativePlace.0 }}"#}
+    {#                       placeholder="来自哪里"/>#}
+    {#            </li>#}
+    {#            <li>#}
+    {#                <i>手机</i>#}
+    {#                <input type="text" class="infor-tele" name="telephone" value="{{ errors.telephone.0 }}"#}
+    {#                       placeholder="13012345678"/>#}
+    {#            </li>#}
+    {#        </ul>#}
+    {#        <input type="submit" class="login-btn" value="确认提交">#}
+    {#    </form>#}
+    {#    {% endif %}#}
 {% endblock %}
 

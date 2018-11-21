@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
-
-from user.form import AccountVerify, RegisterLogin, ForgetPass
+from user.form import AccountVerify, RegisterLogin, ForgetPass, PersonalInformation
+from user.helper import set_password, old_request, set_session
 from user.models import Username
 
 
@@ -14,14 +14,14 @@ def reg(request):
     :param request:
     :return:
     """
-    # Username.objects.create(username='shangshan24', password='1013144')
     if request.method == 'POST':  # 判断是从什么条件下进入网页,如果是POST,则是提交的方式
         data = request.POST  # 获取提交内容
         form = AccountVerify(data)  # 解析提交内容
         if form.is_valid():  # 对获取清除后的数据判断
             data = form.cleaned_data
-            # print(data)
-            Username.objects.create(username=data['account'], password=data['password2'])  # 存入数据库
+            password_one = data['password2']
+            password = set_password(password_one)
+            Username.objects.create(username=data['account'], password=password)  # 存入数据库
             return redirect("user:登录")
         else:
             context = {
@@ -48,10 +48,11 @@ def login(request):
         form = RegisterLogin(data)
         if form.is_valid():
             data = form.cleaned_data
+            password_one = data['password']
+            password = set_password(password_one)
             one = Username.objects.filter(username=data['account']).first()
-            print(one.password)
-            print(data['password'])
-            if one.password == data['password']:
+            if one.password == password:
+                set_session(request, one)
                 return redirect("user:首页")
             else:
                 context = {
@@ -83,7 +84,9 @@ def forget_password(request):
         if form.is_valid():  # 对获取清除后的数据判断
             data = form.cleaned_data
             # print(data)
-            Username.objects.filter(username=data['account']).update(password=data['password2'])  # 存入数据库
+            password_one = data['password2']
+            password = set_password(password_one)
+            Username.objects.filter(username=data['account']).update(password=password)  # 存入数据库
             return redirect("user:登录")
         else:
             context = {
@@ -94,7 +97,6 @@ def forget_password(request):
             return render(request, "personal/forgetpassword.html", context)  # 提交到页面
     else:
         return render(request, 'personal/forgetpassword.html')
-    # return render(request, 'personal/forgetpassword.html')
 
 
 def index(request):
@@ -103,9 +105,10 @@ def index(request):
     :param request:
     :return:
     """
-    return render(request, 'father/../../templates/personal/index.html')
+    return render(request, 'personal/index.html')
 
 
+@old_request
 def member(request):
     """
     个人中心
@@ -115,10 +118,47 @@ def member(request):
     return render(request, 'personal/member.html')
 
 
+@old_request
 def infor(request):
     """
     个人信息
     :param request:
     :return:
     """
-    return render(request, 'personal/infor.html')
+    if request.method == 'POST':
+        # 获取数据
+        data = request.POST
+        # 处理数据
+        form = PersonalInformation(data)
+        if form.is_valid():
+            # 接收处理过后的数据
+            data = form.cleaned_data
+            id = request.session.get("user_id")
+            # 查询session保存的id,然后通过id添加数据
+            # print(type(data['telephone']))
+            Username.objects.filter(pk=id).update(nickname=data['nickname'],
+                                                  telephone=data['telephone'],
+                                                  birthday=data['birthday'],
+                                                  school=data['school'],
+                                                  nativePlace=data['nativePlace'],
+                                                  location=data['location'])
+            # 回显数据
+            data = Username.objects.filter(pk=id).first()
+            context = {
+                'data': data
+            }
+            return render(request, 'personal/infor.html', context)
+        else:
+            context = {
+                'errors': form.errors,  # 生成错误提示
+            }
+            return render(request, 'personal/infor.html', context)
+    else:
+        # 查询session保存的id,查询数据
+        id = request.session.get("user_id")
+        data = Username.objects.filter(pk=id).first()
+        # 回显数据
+        context = {
+            'data': data
+        }
+        return render(request, 'personal/infor.html', context)

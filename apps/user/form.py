@@ -108,34 +108,42 @@ class PersonalInformation(forms.Form):
     验证个人信息合格性
     """
     nickname = forms.CharField(error_messages={
-        'max_length': '昵称长度必须小于16位',
-    }, required=False)  # 昵称
+        'max_length': '昵称长度必须小于50位',
+    }, required=False, max_length=50, )  # 昵称
 
     telephone = forms.CharField(validators=[
         RegexValidator(r'^1[13456789]\d{9}$',
                        "提示信息:手机号码格式错误"),
     ], required=False)  # 电话号码
 
-    birthday = forms.CharField(required=False)  # 出生日期
+    birthday = forms.DateField(required=False)  # 出生日期
 
-    school = forms.CharField(validators={
-        'max_length': '地址长度必须小于50位',
-    }, required=False)  # 学校
+    school = forms.CharField(max_length=50,
+                             required=False,
+                             error_messages={
+                                 'max_length': '学校名字长度必须小于50位',
+                             })  # 学校
 
-    nativePlace = forms.CharField(validators={
-        'max_length': '地址长度必须小于50位',
-    }, required=False)  # 现地址
+    nativePlace = forms.CharField(max_length=50,
+                                  required=False,
+                                  error_messages={
+                                      'max_length': '学校名字长度必须小于50位',
+                                  })  # 现地址
 
-    location = forms.CharField(validators={
-        'max_length': '地址长度必须小于50位',
-    }, required=False)  # 家乡地址
+    location = forms.CharField(max_length=50,
+                               required=False,
+                               error_messages={
+                                   'max_length': '地址长度必须小于50位',
+                               })  # 家乡地址
 
-    def clean_time(self):
+    def clean_birthday(self):
         # 获取当前时间
         now = date.today()
         # 获取文本时间
         time = self.cleaned_data.get('birthday')
         # print(time, not time)
+        if time is None:
+            return time
         if time > now:
             raise forms.ValidationError('请正确填写日期')
         return time

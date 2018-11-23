@@ -156,6 +156,7 @@ def member(request):
     if data.nickname is None:
         context = {
             'user_nickname': data.username,
+            'user_head': request.session.get("user_head")
         }
         return render(request, 'personal/member.html', context)
     else:

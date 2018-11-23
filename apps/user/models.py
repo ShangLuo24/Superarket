@@ -17,6 +17,7 @@ class Username(BaseModel):
     school = models.CharField(max_length=50, null=True, blank=True, verbose_name='学校')  # 学校
     nativePlace = models.CharField(max_length=50, null=True, blank=True, verbose_name='家乡')  # 家乡
     location = models.CharField(max_length=50, null=True, blank=True, verbose_name='地址')  # 地址
+    head = models.ImageField(upload_to='shop/%Y%m', default='images/infortx.png', verbose_name='头像')
 
     class Meta:
         db_table = 'username'

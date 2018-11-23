@@ -25,6 +25,7 @@ def set_session(request, username):
     :return:
     """
     request.session["user_id"] = username.pk
+    request.session["user_head"] = username.head
 
 
 def old_request(old_def):

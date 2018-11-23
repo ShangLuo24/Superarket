@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/1.11/ref/settings/
 
 import os
 import sys
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # 将apps添加到环境的包查找路径第一位置
@@ -38,9 +39,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'user.apps.UserConfig',
-    # 'orderForm.apps.OrderformConfig',
-    # 'commodity.apps.CommodityConfig',
-    # 'shoppingTrolley.apps.ShoppingTrolleyConfig',
+    'orderForm.apps.OrderformConfig',
+    'commodity.apps.CommodityConfig',
+    'shoppingTrolley.apps.ShoppingtrolleyConfig',
 ]
 
 MIDDLEWARE = [
@@ -67,6 +68,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'django.template.context_processors.media',
             ],
         },
     },
@@ -127,6 +129,7 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "static"),
 ]
+
 # 配置 redis数据库
 CACHES = {
     "default": {
@@ -148,3 +151,7 @@ ACCESS_KEY_ID = "LTAI2qSiJdWP87em"
 ACCESS_KEY_SECRET = "FzORQ587PgGBoOAdmxzCjaxQi8klUi"
 # -*- coding: utf-8 -*-
 
+# 上传文件
+MEDIA_URL = "/static/media/"
+# 储存url地址
+MEDIA_ROOT = os.path.join(BASE_DIR, 'static/media')

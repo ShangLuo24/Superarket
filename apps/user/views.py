@@ -1,8 +1,13 @@
+import uuid
+
 from django.shortcuts import render, redirect
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from user.form import AccountVerify, RegisterLogin, ForgetPass, PersonalInformation
-from user.helper import set_password, old_request, set_session
+from user.helper import set_password, old_request, set_session, send_sms
 from user.models import Username
+import re
+import random
+from django_redis import get_redis_connection
 
 
 def reg(request):
@@ -32,6 +37,38 @@ def reg(request):
             return render(request, "personal/reg.html", context)  # 提交到页面
     else:
         return render(request, 'personal/reg.html')
+
+
+def message(request):
+    """
+    发送短信验证码
+    :param request:
+    :return:
+    """
+    if request.method == 'POST':
+        # 接收手机号码,生成随机码,保存在redis中,
+        phone = request.POST.get('account', '')
+        # 后台验证手机号码格式
+        phone_one = re.compile("^1[3-9]\d{9}$")
+        # 进行匹配
+        result = re.search(phone_one, phone)
+        if not result:
+            return JsonResponse({"errr": 1, "errorore": "请求方式错误"})
+        else:
+            # 验证成功,则生成随机数
+            random_code = "".join([str(random.randint(0, 9)) for _ in range(4)])
+            # 保存在redis中,设置过期时间
+            red = get_redis_connection("default")
+            red.set(phone, random_code)
+            red.expire(phone, 120)
+            # 发送短信
+            # print(random_code)
+            __business_id = uuid.uuid1()
+            params = "{\"code\":\"%s\",\"product\":\"测试验证\"}" % random_code
+            print(send_sms(__business_id, phone, "注册验证", "SMS_2245271", params))
+            return JsonResponse({"errr": 0})
+    else:
+        return JsonResponse({"errr": 1, "errorore": "请求方式错误"})
 
 
 def login(request):
@@ -120,7 +157,7 @@ def member(request):
         context = {
             'user_nickname': data.username,
         }
-        return render(request, 'personal/member.html',context)
+        return render(request, 'personal/member.html', context)
     else:
         context = {
             'user_nickname': data.nickname,

@@ -14,7 +14,7 @@ Including another URLconf
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))s
 """
 from django.conf.urls import url
-from user.views import forget_password, reg, login, index, member, infor
+from user.views import forget_password, reg, login, index, member, infor, message
 
 urlpatterns = [
     url(r'^$', index, name='首页'),
@@ -23,4 +23,5 @@ urlpatterns = [
     url(r'^reg/$', reg, name='注册'),
     url(r'^member/$', member, name='个人中心'),
     url(r'^infor/$', infor, name='个人信息'),
+    url(r'^message/$', message, name='发送短信')
 ]

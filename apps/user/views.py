@@ -135,15 +135,6 @@ def forget_password(request):
         return render(request, 'personal/forgetpassword.html')
 
 
-# def index(request):
-#     """
-#     跳转首页
-#     :param request:
-#     :return:
-#     """
-#     return render(request, 'personal/index.html')
-
-
 @old_request
 def member(request):
     """
@@ -154,7 +145,7 @@ def member(request):
     user_id = request.session.get("user_id")
     data = Username.objects.filter(pk=user_id).first()
     head = request.session.get("user_head")
-    print(head)
+    # print(head)
     if data.nickname is None:
         context = {
             'user_nickname': data.username,

@@ -49,7 +49,7 @@
     </div>
     <div class="detal-info" style="position: relative; width: 100%;">
         <p>{{ sku.Goods_spu_id.Goods_spu_name }}{{ sku.Goods_sku_name }}</p>
-        <h2>商城价：<span>￥{{ sku.Goods_sku_Price }}/{{ sku.Goods_sku_Unitinfo.class_unit }}</span></h2>
+        <h2>商城价：<span id="price">￥{{ sku.Goods_sku_Price }}/{{ sku.Goods_sku_Unitinfo.class_unit }}</span></h2>
         <div class="heart">
             <img src="{% static 'images/herat.png' %}" width="25" id="imgflag" onclick="changeImage()"/>
             <p>收藏</p>
@@ -64,6 +64,9 @@
             <a class="increase">+</a>
             <span id="dprice" class="price" style="display:none"> 36</span>
         </div>
+    </div>
+    <div class="d-amount">
+        <h4>总价: </h4>
     </div>
     <div style="background: #eee; height: 10px;"></div>
     <div class="am-tabs detail-list" data-am-tabs>
@@ -132,17 +135,21 @@
                 var current_num = parseInt(self.siblings('input').val());
                 current_num += 1;
                 self.siblings('input').val(current_num);
-                update_item(self.siblings('input').data('item-id'));
-            })
+                {#update_item(self.siblings('input').data('item-id'));#}
+            });
             $('.decrease').click(function () {
                 var self = $(this);
                 var current_num = parseInt(self.siblings('input').val());
                 if (current_num > 1) {
                     current_num -= 1;
                     self.siblings('input').val(current_num);
-                    update_item(self.siblings('input').data('item-id'));
+                    {#update_item(self.siblings('input').data('item-id'));#}
                 }
             })
+        });
+        $(function () {
+            var price = $("span[id='price']").val();
+            var number = $("#id").val();
         })
     </script>
 {% endblock %}

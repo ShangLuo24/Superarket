@@ -38,10 +38,11 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'user.apps.UserConfig',
-    'orderForm.apps.OrderformConfig',
-    'commodity.apps.CommodityConfig',
-    'shoppingTrolley.apps.ShoppingtrolleyConfig',
+    'user.apps.UserConfig',  # 用户模块
+    'orderForm.apps.OrderformConfig',  #  订单模块
+    'commodity.apps.CommodityConfig',  # 首页商品模块
+    'shoppingTrolley.apps.ShoppingtrolleyConfig',  # 购物车模块
+    'ckeditor',  # 添加ckeditor富文本编辑器
 ]
 
 MIDDLEWARE = [
@@ -124,11 +125,13 @@ USE_TZ = False
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
-
-STATIC_URL = '/static/'
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, "static"),
-]
+# 配置静态文件地址,测试阶段使用
+# STATIC_URL = '/static/'
+# STATICFILES_DIRS = [
+#     os.path.join(BASE_DIR, "static"),
+# ]
+# 设置静态文件根目录  上线的时候使用
+STATIC_ROOT = os.path.join(BASE_DIR, "static")
 
 # 配置 redis数据库
 CACHES = {

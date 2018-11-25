@@ -20,16 +20,17 @@
 {% block content %}
     <div style="height: 49px;"></div>
     {#    {% if data %}#}
-    <form action="{% url 'user:个人信息' %}" method="post">
+    <form action="{% url 'user:个人信息' %}" method="post" enctype="multipart/form-data">
         {% csrf_token %}
         <ul class="safty1">
             <li>
                 <a href="">
                     <i style="margin-top: 25px;">头像</i>
                     <div class="infor-pic">
-                        <img src="{% static 'images/infortx.png' %}"/>
+                        <img src="{{ data.head.url }}"/>
                     </div>
-                    <button type="button" class="am-btn am-btn-secondary am-round am-btn-xs" id="min">确认头像</button>
+                    <input type="file" name="head" value="上传头像">
+                    {#                    <button type="file" class="am-btn am-btn-secondary am-round am-btn-xs" id="min" value="head">确认头像</button>#}
                 </a>
             </li>
             <li>
@@ -51,7 +52,7 @@
                             <input type="radio" name="sex" value="1" data-am-ucheck>男
                         </label>
                         <label class="am-radio-inline">
-                            <input type="radio" name="sex" checked="checked"  value="2" data-am-ucheck>女
+                            <input type="radio" name="sex" checked="checked" value="2" data-am-ucheck>女
                         </label>
                     {% endif %}
 
@@ -85,72 +86,8 @@
             </li>
         </ul>
         <input type="submit" class="login-btn" value="确认提交">
+        <a href="{% url 'user:个人中心' %}"><input type="button" class="login-btn" value="返回个人中心"></a>
     </form>
-    {#        {% else %}#}
-    {#        <form action="{% url 'user:个人信息' %}" method="post">#}
-    {#        {% csrf_token %}#}
-    {#        <ul class="safty1">#}
-    {#            <li>#}
-    {#                <a href="">#}
-    {#                    <i style="margin-top: 25px;">头像</i>#}
-    {#                    <div class="infor-pic">#}
-    {#                        <img src="{% static 'images/infortx.png' %}"/>#}
-    {#                    </div>#}
-    {#                </a>#}
-    {#            </li>#}
-    {#            <li>#}
-    {#                <i>昵称</i>#}
-    {#                <input type="text" class="infor-tele" name="nickname" value="{{ errors.nickname.0 }}" placeholder="请输入昵称"/>#}
-    {#            </li>#}
-    {#            <li>#}
-    {#                <i>性别</i>#}
-    {#                <i class="infor-tele">#}
-    {#                    {% if one.sex == 1 %}#}
-    {#                        <label class="am-radio-inline">#}
-    {#                            <input type="radio" name="sex" checked="" value="1" data-am-ucheck>男#}
-    {#                        </label>#}
-    {#                        <label class="am-radio-inline">#}
-    {#                            <input type="radio" name="sex" value="2" data-am-ucheck>女#}
-    {#                        </label>#}
-    {#                    {% else %}#}
-    {#                        <label class="am-radio-inline">#}
-    {#                            <input type="radio" name="sex" value="1" data-am-ucheck>男#}
-    {#                        </label>#}
-    {#                        <label class="am-radio-inline">#}
-    {#                            <input type="radio" name="sex" checked="checked" value="2" data-am-ucheck>女#}
-    {#                        </label>#}
-    {#                    {% endif %}#}
-    {#                </i>#}
-    {#            </li>#}
-    {#            <li>#}
-    {#                <i>生日</i>#}
-    {#                <input type="date" class="infor-tele" name="birthday" value="{{ errors.birthday.0 }}"#}
-    {#                       placeholder="出生日期"/>#}
-    {#            </li>#}
-    {#        </ul>#}
-    {#        <div style="height: 10px; background: #efefef;"></div>#}
-    {#        <ul class="safty1">#}
-    {#            <li>#}
-    {#                <i>学校</i>#}
-    {#                <input type="text" class="infor-tele" name="school" value="{{ errors.school.0 }}" placeholder="就读于哪个学校"/>#}
-    {#            </li>#}
-    {#            <li>#}
-    {#                <i>位置</i>#}
-    {#                <input type="text" class="infor-tele" name="location" value="{{ errors.location.0 }}" placeholder="详细地址"/>#}
-    {#            </li>#}
-    {#            <li>#}
-    {#                <i>故乡</i>#}
-    {#                <input type="text" class="infor-tele" name="nativePlace" value="{{ errors.nativePlace.0 }}"#}
-    {#                       placeholder="来自哪里"/>#}
-    {#            </li>#}
-    {#            <li>#}
-    {#                <i>手机</i>#}
-    {#                <input type="text" class="infor-tele" name="telephone" value="{{ errors.telephone.0 }}"#}
-    {#                       placeholder="13012345678"/>#}
-    {#            </li>#}
-    {#        </ul>#}
-    {#        <input type="submit" class="login-btn" value="确认提交">#}
-    {#    </form>#}
-    {#    {% endif %}#}
+
 {% endblock %}
 

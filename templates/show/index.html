@@ -1,0 +1,169 @@
+{% extends 'father/index.html' %}
+{% load static %}
+
+{% block content %}
+    <div style="height: 49px;"></div>
+    <!--图片轮换-->
+    <div class="am-slider am-slider-default" data-am-flexslider id="demo-slider-0">
+        <ul class="am-slides">
+            {% for one in data %}
+                <li><a href="{{ one.Goods_sku_id }}"><img src="{{ one.Page_Imgurl.url }}"/></a></li>
+            {% endfor %}
+        </ul>
+    </div>
+    <!--导航-->
+    <ul class="sq-nav">
+        <li>
+            <div class="am-gallery-item">
+                <a href="recharge.html" class="">
+                    <img src="{% static 'images/icon.png' %}"/>
+                    <p>充值</p>
+                </a>
+            </div>
+        </li>
+        <li>
+            <div class="am-gallery-item">
+                <a href="javascript:;" class="index-qd">
+                    <img src="{% static 'images/icon1.png' %}"/>
+                    <p>签到</p>
+                </a>
+            </div>
+        </li>
+        <li>
+            <div class="am-gallery-item">
+                <a href="yhq.html" class="">
+                    <img src="{% static 'images/icon2.png' %}"/>
+                    <p>红包</p>
+                </a>
+            </div>
+        </li>
+        <li>
+            <div class="am-gallery-item">
+                <a href="" class="">
+                    <img src="{% static 'images/icon3.png' %}"/>
+                    <p>即将上线</p>
+                </a>
+            </div>
+        </li>
+    </ul>
+    <ul class="sq-nav1">
+        <li>
+            <div class="am-gallery-item">
+                <a href="speed.html" class="">
+                    <img src="{% static 'images/icon4.png' %}"/>
+                    <p>零食飞速</p>
+                </a>
+            </div>
+        </li>
+        <li>
+            <div class="am-gallery-item">
+                <a href="{% url 'com:商店' 1 1 %}" class="">
+                    <img src="{% static 'images/icon5.png' %}"/>
+                    <p>超市</p>
+                </a>
+            </div>
+        </li>
+
+    </ul>
+    <div class="h-line"></div>
+    <!--不规则展示-->
+    <div class="index-product">
+        <div class="index-pro-lf"><a href="{{ home.0.Home_Linkurl }}"><img src="{{ home.0.Home_Imgurl.url }}"/></a>
+        </div>
+        <div class="index-pro-lr"><a href="{{ home.1.Home_Linkurl }}"><img src="{{ home.1.Home_Imgurl.url }}"/></a>
+        </div>
+    </div>
+    <div class="product-bot">
+        <div class="product-bot-lf"><a href="{{ home.2.Home_Linkurl }}"><img src="{{ home.2.Home_Imgurl.url }}"/></a>
+        </div>
+        <div class="product-bot-lr">
+            <div class="top"><a href="{{ home.3.Home_Linkurl }}"><img src="{{ home.3.Home_Imgurl.url }}"/></a></div>
+            <div class="bot">
+                <div class="bot-lf"><a href="{{ home.4.Home_Linkurl }}"><img src="{{ home.4.Home_Imgurl.url }}"/></a>
+                </div>
+                <div class="bot-lr"><a href="{{ home.5.Home_Linkurl }}"><img src="{{ home.5.Home_Imgurl.url }}"/></a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--不规则展示-->
+    <div class="h-line"></div>
+    <!-- 特色专区-->
+
+
+    {% for act in activ %}
+        <div class="sq-title">
+            <img src="{% static 'images/ts.png' %}" width="26"/>
+            {{ act.Activity }}
+        </div>
+
+        <ul data-am-widget="gallery"
+            class="am-gallery pro-list am-avg-sm-2 am-avg-md-2 am-avg-lg-4 am-gallery-default">
+            {% for a in act.division_set.all %}
+                <li>
+                    <div class="am-gallery-item">
+                        <a href="{% url 'com:详情' a.Division_sku_id %}" class="">
+                            <img src="{{ a.Division_sku.Goods_sku_Logo.url }}"/>
+                            <h3 class="am-gallery-title">
+                                {{ a.Division_sku.Goods_spu_id.Goods_spu_name }}{{ a.Division_sku.Goods_sku_name }}</h3>
+                            <div class="am-gallery-desc">
+                                ￥{{ a.Division_sku.Goods_sku_Price }}/{{ a.Division_sku.Goods_sku_Unitinfo }}</div>
+                        </a>
+                    </div>
+                </li>
+            {% endfor %}
+        </ul>
+    {% endfor %}
+    <!--签到-->
+    <div class="qd-box">
+        <div class="popup-title">
+            <span>签到成功</span>
+            <div class="popup-close"><i class="iconfont">&#xe602</i></div>
+        </div>
+        <div class="dq-text">
+            <img src="{% static 'images/qiandao.png' %}" width="40"/>&nbsp; 您已连续签到3天
+        </div>
+    </div>
+{% endblock %}
+
+
+{% block footer %}
+    <!--底部-->
+    <div style="height: 55px;"></div>
+    <div data-am-widget="navbar" class="am-navbar am-cf am-navbar-default sq-foot am-no-layout" id="">
+        <ul class="am-navbar-nav am-cf am-avg-sm-5">
+            <li>
+                <a href="{% url 'com:首页' %}" class="curr">
+                    <span class="am-icon-home"></span>
+                    <span class="am-navbar-label">首页</span>
+                </a>
+            </li>
+            <li>
+                <a href="#" class="">
+                    <span class="am-icon-comments"></span>
+                    <span class="am-navbar-label">动态</span>
+                </a>
+            </li>
+            <li>
+                <a href="#" class="">
+                    <span class="am-icon-shopping-cart"></span>
+                    <span class="am-navbar-label">购物车</span>
+                </a>
+            </li>
+            <li>
+                <a href="#" class="">
+                    <span class="am-icon-file-text"></span>
+                    <span class="am-navbar-label">订单</span>
+                </a>
+            </li>
+
+            <li>
+                <a href="{% url 'user:个人中心' %}" class="">
+                    <span class="am-icon-user"></span>
+                    <span class="am-navbar-label">我的</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+{% endblock %}
+

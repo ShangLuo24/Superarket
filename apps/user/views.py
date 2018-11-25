@@ -90,7 +90,7 @@ def login(request):
             one = Username.objects.filter(username=data['account']).first()
             if one.password == password:
                 set_session(request, one)
-                return redirect("user:首页")
+                return redirect("com:首页")
             else:
                 context = {
                     'errors': '密码错误'
@@ -135,13 +135,13 @@ def forget_password(request):
         return render(request, 'personal/forgetpassword.html')
 
 
-def index(request):
-    """
-    跳转首页
-    :param request:
-    :return:
-    """
-    return render(request, 'personal/index.html')
+# def index(request):
+#     """
+#     跳转首页
+#     :param request:
+#     :return:
+#     """
+#     return render(request, 'personal/index.html')
 
 
 @old_request
@@ -153,15 +153,18 @@ def member(request):
     """
     user_id = request.session.get("user_id")
     data = Username.objects.filter(pk=user_id).first()
+    head = request.session.get("user_head")
+    print(head)
     if data.nickname is None:
         context = {
             'user_nickname': data.username,
-            'user_head': request.session.get("user_head")
+            'user_head': head,
         }
         return render(request, 'personal/member.html', context)
     else:
         context = {
             'user_nickname': data.nickname,
+            'user_head': head,
         }
         return render(request, 'personal/member.html', context)
 
@@ -176,6 +179,7 @@ def infor(request):
     if request.method == 'POST':
         # 获取数据
         data = request.POST
+        head = request.FILES.get('head')
         # 处理数据
         form = PersonalInformation(data)
         if form.is_valid():
@@ -185,18 +189,25 @@ def infor(request):
             # 查询session保存的id,然后通过id添加数据
             # print(type(data['telephone']))
             sex = request.POST.get("sex")
+
             Username.objects.filter(pk=user_id).update(nickname=data['nickname'],
                                                        telephone=data['telephone'],
                                                        sex=sex,
                                                        birthday=data['birthday'],
                                                        school=data['school'],
                                                        nativePlace=data['nativePlace'],
-                                                       location=data['location']
+                                                       location=data['location'],
                                                        )
             # 回显数据
-            data = Username.objects.filter(pk=user_id).first()
+            data = Username.objects.get(pk=user_id)
+            data.head = head
+            data.save()
+            set_session(request, data)
+            head = request.session.get("user_head")
+            print(head)
+            data2 = Username.objects.get(pk=user_id)
             context = {
-                'data': data
+                'data': data2
             }
             return render(request, 'personal/infor.html', context)
         else:

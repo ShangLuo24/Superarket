@@ -74,7 +74,7 @@
 
         <div class="am-tabs-bd">
             <div class="am-tab-panel am-fade am-in am-active detail " id="tab1">
-                <p>{{ sku.Goods_sku_intro }}</p>
+                <p>{{ sku.Goods_sku_intro|safe }}</p>
                 <img src="{{ sku.Goods_sku_Logo.url }}"/>
             </div>
             <div class="am-tab-panel am-fade detail " id="tab2">

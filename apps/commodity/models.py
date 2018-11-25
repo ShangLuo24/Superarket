@@ -1,6 +1,8 @@
+from ckeditor_uploader.fields import RichTextUploadingField
 from django.db import models
 
 # Create your models here.
+from Superarket import settings
 from db.base_model import BaseModel
 
 
@@ -66,6 +68,11 @@ class Goods(BaseModel):
     Goods_sku_cate_id = models.ForeignKey(to="Class", on_delete=models.CASCADE, verbose_name='商品分类id')
     Goods_spu_id = models.ForeignKey(to="Create", on_delete=models.CASCADE, verbose_name='商品spu_id')
 
+    def show_logo(self):
+        return "<img src='{}{}'/>".format(settings.MEDIA_URL, self.Goods_sku_Logo)
+    show_logo.allow_tags = True
+    show_logo.short_description = 'Goods_sku_Logo'
+
     class Meta:
         db_table = "Goods"
         verbose_name = '商品sku表'
@@ -83,7 +90,7 @@ class Create(BaseModel):
     详情
     """
     Goods_spu_name = models.CharField(max_length=50, verbose_name='商品名称')
-    Goods_spu_intro = models.CharField(max_length=255, verbose_name='商品详情')
+    Goods_spu_intro = RichTextUploadingField(verbose_name='商品详情')
 
     class Meta:
         db_table = "Create"

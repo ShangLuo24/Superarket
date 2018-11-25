@@ -39,10 +39,11 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'user.apps.UserConfig',  # 用户模块
-    'orderForm.apps.OrderformConfig',  #  订单模块
+    'orderForm.apps.OrderformConfig',  # 订单模块
     'commodity.apps.CommodityConfig',  # 首页商品模块
     'shoppingTrolley.apps.ShoppingtrolleyConfig',  # 购物车模块
     'ckeditor',  # 添加ckeditor富文本编辑器
+    'ckeditor_uploader',  # 添加ckeditor富文本编辑器文件上传部件
 ]
 
 MIDDLEWARE = [
@@ -125,13 +126,15 @@ USE_TZ = False
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
+STATIC_URL = '/static/'
+
 # 配置静态文件地址,测试阶段使用
-# STATIC_URL = '/static/'
-# STATICFILES_DIRS = [
-#     os.path.join(BASE_DIR, "static"),
-# ]
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, "static"),
+]
+
 # 设置静态文件根目录  上线的时候使用
-STATIC_ROOT = os.path.join(BASE_DIR, "static")
+# STATIC_ROOT = os.path.join(BASE_DIR, "static")
 
 # 配置 redis数据库
 CACHES = {
@@ -158,3 +161,13 @@ ACCESS_KEY_SECRET = "FzORQ587PgGBoOAdmxzCjaxQi8klUi"
 MEDIA_URL = "/static/media/"
 # 储存url地址
 MEDIA_ROOT = os.path.join(BASE_DIR, 'static/media')
+
+# 设置ckeditor的上传目录
+CKEDITOR_UPLOAD_PATH = "uploads/"
+
+# 编辑器样式配置
+CKEDITOR_CONFIGS = {
+    'default': {
+        'toolbar': 'full',
+    },
+}

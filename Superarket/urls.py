@@ -18,6 +18,7 @@ from django.contrib import admin
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
-    url(r'^user/', include('user.urls', namespace='user')),
-    url(r'^com/', include('commodity.urls', namespace='com')),
+    url(r'ckeditor', include("ckeditor_uploader.urls")),  # 用户上传的富文本域
+    url(r'^user/', include('user.urls', namespace='user')),   # 用户模块
+    url(r'^com/', include('commodity.urls', namespace='com')),   # 商品模块
 ]

@@ -76,6 +76,7 @@ class GoodsAdmin(admin.ModelAdmin):
                     'Goods_sku_name',
                     'Goods_sku_intro',
                     'Goods_sku_Is_putaway',
+                    'Goods_sku_Logo',
                     'Goods_sku_cate_id',
                     'Goods_spu_id'
                     ]

@@ -1,3 +1,4 @@
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.shortcuts import render, redirect
 
 from commodity.models import SlideShow, Home, Activity, Division, Goods, Class
@@ -67,10 +68,27 @@ def category(request, id, order):
         good = good.first()
         id = good.pk
 
+    # 分页查询
+    # 对数据进行分页
+    pageSize = 10
+    paginator = Paginator(good, pageSize)
+
+    # 获取某页数据,手动输入/?p=数字
+    page = request.GET.get('p', 1)
+
+    # 判断p范围
+    try:
+        pig = paginator.page(page)
+    except EmptyPage:
+        pig = paginator.page(paginator.num_pages)
+    except PageNotAnInteger:
+        pig = paginator.page(1)
+
+    # 传入数据
     context = {
         'id': id,
         'clas': clas,
-        'Good': good,
+        'Good': pig,
         'order': order,
     }
     return render(request, 'show/category.html', context)

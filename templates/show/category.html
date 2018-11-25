@@ -32,8 +32,10 @@
             </a>
         </div>
         <div class="cate-search">
-            <input type="text" class="cate-input" placeholder="请输入您要的搜索的产品关键词"/>
-            <input type="button" class="cate-btn"/>
+            <form action="/search/" method="get">
+                <input type="text" name="q" value="" class="cate-input" placeholder="请输入您要的搜索的产品关键词"/>
+                <input type="submit" class="cate-btn" value=""/>
+            </form>
         </div>
     </header>
     <div style="height: 49px;"></div>
@@ -81,8 +83,15 @@
                     </li>
                 {% endfor %}
             </ul>
+            {% if Good.has_previous %}
+                <a href="?pig={{ Good.previous_page_number }}" class="am-btn">上一页</a>
+            {% endif %}
+            {% if Good.has_next %}
+                <a href="?pig={{ Good.next_page_number }}" class="am-btn">下一页</a>
+            {% endif %}
         </div>
     </div>
+
 {% endblock %}
 
 {% block footer %}
@@ -125,7 +134,7 @@
             })
         });
         $(function () {
-            if("{{ order }}" == 2) {
+            if ("{{ order }}" == 2) {
                 $(".list-price").parent("a").attr('href', "{% url 'com:商店' id 3%}");
             } else if ("{{ order }}" == 3) {
                 $(".list-price").parent("a").attr('href', "{% url 'com:商店' id 2 %}");

@@ -58,7 +58,7 @@ class Goods(BaseModel):
         (2, '未上架'),
     )
     Goods_sku_name = models.CharField(max_length=50, verbose_name='商品信息')
-    Goods_sku_intro = models.CharField(max_length=255, verbose_name='商品简介')
+    Goods_sku_intro = RichTextUploadingField(verbose_name='商品简介')
     Goods_sku_Price = models.DecimalField(max_digits=9, decimal_places=2, verbose_name='商品价格', default=0)
     Goods_sku_Unitinfo = models.ForeignKey(to="Unti", on_delete=models.CASCADE, verbose_name='单位')
     Goods_sku_Num = models.IntegerField(verbose_name='库存')
@@ -70,6 +70,7 @@ class Goods(BaseModel):
 
     def show_logo(self):
         return "<img src='{}{}'/>".format(settings.MEDIA_URL, self.Goods_sku_Logo)
+
     show_logo.allow_tags = True
     show_logo.short_description = 'Goods_sku_Logo'
 
@@ -202,4 +203,3 @@ class Division(BaseModel):
         db_table = "Division"
         verbose_name = '首页专区活动商品表'
         verbose_name_plural = verbose_name
-

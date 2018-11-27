@@ -65,21 +65,22 @@
             <ul class="list-pro">
                 {% for good in Good %}
                     <li>
-                        <a href="{% url 'com:详情' good.pk %}"><img src="{{ MEDIA_URL }}{{ good.Goods_sku_Logo }}"
-                                                                  class="list-pic"/></a>
+                        <a href="{% url 'com:详情' good.pk %}">
+                            <img src="{{ MEDIA_URL }}{{ good.Goods_sku_Logo }}" class="list-pic"/>
+                        </a>
                         <div class="shop-list-mid" style="width: 65%;">
                             <div class="tit"><a href="{% url 'com:详情' good.pk %}">{{ good.Goods_sku_name }}</a></div>
                             <div class="am-gallery-desc">￥{{ good.Goods_sku_Price }}</div>
-                            <p>销量：{{ good.Goods_sku_Sellnum }}{{ good.Goods_sku_Unitinfo.class_unit }}</p>
+                            <p>销量：{{ good.Goods_sku_Sellnum }}</p>
                         </div>
                         <div class="list-cart">
                             <div class="d-stock ">
                                 <a class="decrease">-</a>
                                 <input id="num" readonly="" class="text_box" name="" type="text" value="0"/>
+                                <span style="display:none" class="id">{{ good.pk }}</span>
                                 <a class="increase">+</a>
                             </div>
                         </div>
-                        <!--<a href="" class="list-cart"><img src="images/cart.png" width="30"/></a>-->
                     </li>
                 {% endfor %}
             </ul>
@@ -98,10 +99,15 @@
     <!--底部-->
     <div style="height: 55px;"></div>
     <div class="fix-bot">
-        <div class="fix-bot-cart"><i>8</i></div>
+        <a href="{% url 'shop:购物车' %}">
+            <div class="fix-bot-cart">
+                <i id="all_num"></i>
+            </div>
+        </a>
         <a href="#" class="list-js">去结算</a>
         <a href="#" class="list-jsk">一键快购</a>
     </div>
+    {% csrf_token %}
 {% endblock %}
 
 {% block food_jss %}
@@ -116,22 +122,67 @@
                     self.siblings(".decrease").fadeIn();
                     self.siblings(".text_box").fadeIn();
                 }
-                self.siblings('input').val(current_num);
-                update_item(self.siblings('input').data('item-id'));
-            });
-            $('.decrease').click(function () {
-                var self = $(this);
-                var current_num = parseInt(self.siblings('input').val());
-                if (current_num > 0) {
-                    current_num -= 1;
-                    if (current_num < 1) {
-                        self.fadeOut();
-                        self.siblings(".text_box").fadeOut();
+                //设置数量
+                var number = 1;
+                //获取sku id;
+                var sku_id = parseInt(self.siblings('span').html());
+                //console.debug(sku_id);
+                var v2 = $("input[name='csrfmiddlewaretoken']").val();
+                $.ajax({
+                    type: 'post',
+                    url: "{% url 'shop:商品页add' %}",
+                    data: {"sku_id": sku_id, 'number': number, "csrfmiddlewaretoken": v2},
+                    dataType: "json",
+                    success: function (data) {
+                        if (data.age == 0) {
+                            var over = confirm("尚未登录,是否跳转登录页面");
+                            if (over) {
+                                location.href = "{% url 'user:登录' %}";  // ?next= url 'com:商店' id sku.pk
+                            }
+                        } else if (data.age == 1) {
+                            console.debug(data.all_num);
+                            $("#all_num").text(data.all_num);
+                        }
                     }
-                    self.siblings('input').val(current_num);
-                    update_item(self.siblings('input').data('item-id'));
-                }
+                });
+                self.siblings('input').val(current_num);
             })
+        });
+
+        $('.decrease').click(function () {
+            var self = $(this);
+            var current_num = parseInt(self.siblings('input').val());
+            //设置数量
+            var number = -1;
+            //获取sku id;
+            var sku_id = parseInt(self.siblings('span').html());
+            //console.debug(sku_id);
+            var v2 = $("input[name='csrfmiddlewaretoken']").val();
+            $.ajax({
+                type: 'post',
+                url: "{% url 'shop:商品页add' %}",
+                data: {"sku_id": sku_id, 'number': number, "csrfmiddlewaretoken": v2},
+                dataType: "json",
+                success: function (data) {
+                    if (data.age == 0) {
+                        var over = confirm("尚未登录,是否跳转登录页面");
+                        if (over) {
+                            location.href = "{% url 'user:登录' %}";  // ?next= url 'com:商店' id sku.pk
+                        }
+                    } else if (data.age == 1) {
+                        console.debug(data.all_num);
+                        $("#all_num").text(data.all_num);
+                    }
+                }
+            });
+            if (current_num > 0) {
+                current_num -= 1;
+                if (current_num < 1) {
+                    self.fadeOut();
+                    self.siblings(".text_box").fadeOut();
+                }
+                self.siblings('input').val(current_num);
+            }
         });
         $(function () {
             if ("{{ order }}" == 2) {

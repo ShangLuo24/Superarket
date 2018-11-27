@@ -36,7 +36,7 @@
                         <div class="d-stock">
                             <a class="decrease">-</a>
                             <input readonly="" class="text_box num" name="" type="text" value="{{ good.count }}">
-                            <span style="display:none">{{ good.Goods_sku_Price }}</span>
+                            <span style="display:none">{{ good.pk }}</span>
                             <a class="increase">+</a>
                         </div>
                     </div>
@@ -55,7 +55,7 @@
     <div class="shop-fix">
 
         <label class="am-checkbox am-warning">
-            <input type="checkbox" checked="checked" value="" data-am-ucheck checked>
+            <input type="checkbox" id="chack_all" checked="checked" value="" data-am-ucheck checked>
         </label>
         <a class="del">全选</a>
         <a href="#" class="js-btn">去结算</a>
@@ -118,18 +118,30 @@
                 var current_num = parseInt(self.siblings('input').val());
                 current_num += 1;
                 self.siblings('input').val(current_num);
-
                 {# 获取数量#}
-                var number = parseInt(self.siblings('input').val());
-                //console.debug(number);
-                var price = parseInt(self.siblings('span').html());
-                //console.debug(price);
-                var price1 = $("#one").text();
-                //console.debug(price1);
-                var price2 = parseInt(price1) + price;
-                //console.debug(price2);
-                $("#one").text(price2.toFixed(2));
+                //设置数量
+                var number = 1;
+                //获取sku id;
+                var sku_id = parseInt(self.siblings('span').html());
+                console.debug(sku_id);
                 var v2 = $("input[name='csrfmiddlewaretoken']").val();
+                $.ajax({
+                    type: 'post',
+                    url: "{% url 'shop:商品页add' %}",
+                    data: {"sku_id": sku_id, 'number': number, "csrfmiddlewaretoken": v2},
+                    dataType: "json",
+                    success: function (data) {
+                        if (data.age == 0) {
+                            var over = confirm("尚未登录,是否跳转登录页面");
+                            if (over) {
+                                location.href = "{% url 'user:登录' %}";  // ?next= url 'com:商店' id sku.pk
+                            }
+                        } else if (data.age == 1) {
+                            talou_price()
+                        }
+                    }
+                });
+                //$("#one").text(price2.toFixed(2));
             });
             $('.decrease').click(function () {
                 var self = $(this);
@@ -137,18 +149,29 @@
                 if (current_num > 0) {
                     current_num -= 1;
                     self.siblings('input').val(current_num);
-
                     {#  减少数量 #}
-                    var number = parseInt(self.siblings('input').val());
-                    //console.debug(number);
-                    var price = parseInt(self.siblings('span').html());
-                    //console.debug(price);
-                    var sum = number * price;
-                    //console.debug(sum);
-                    var price1 = $("#one").text();
-                    var price2 = parseInt(price1) - price;
-                    $("#one").text(price2.toFixed(2));
+                    //设置数量
+                    var number = -1;
+                    //获取sku id;
+                    var sku_id = parseInt(self.siblings('span').html());
+                    //console.debug(sku_id);
                     var v2 = $("input[name='csrfmiddlewaretoken']").val();
+                    $.ajax({
+                        type: 'post',
+                        url: "{% url 'shop:商品页add' %}",
+                        data: {"sku_id": sku_id, 'number': number, "csrfmiddlewaretoken": v2},
+                        dataType: "json",
+                        success: function (data) {
+                            if (data.age == 0) {
+                                var over = confirm("尚未登录,是否跳转登录页面");
+                                if (over) {
+                                    location.href = "{% url 'user:登录' %}";  // ?next= url 'com:商店' id sku.pk
+                                }
+                            } else if (data.age == 1) {
+                                talou_price()
+                            }
+                        }
+                    });
                     if (current_num == 0) {
                         // 删除 empty(); $("p").parent(".selected"); $("p").remove(".hello");
                         self.parents("li").remove();
@@ -173,8 +196,26 @@
                 $("#one").text(new_price.toFixed(2))
             }
 
-            talou_price()
-        });
+            $("#chack_all").on('change', function () {
+                //获取复选框状态
+                var por = $(this).prop("checked");
+                //console.debug(por)
+                //更改商品复选框状态
+                $(".shopcart-list").find(':checkbox').prop('checked', por);
+                talou_price();
+            });
+
+            $(".shopcart-list").find(':checkbox').on('change', function () {
+                //console.debug($(".shopcart-list").find(':checkbox').length == $(".shopcart-list").find(':checked').length);
+                if ($(".shopcart-list").find(':checkbox').length == $(".shopcart-list").find(':checked').length) {
+                    $("#chack_all").prop("checked", true);
+                } else {
+                    $("#chack_all").prop("checked", false);
+                }
+                talou_price();
+            });
+        })
+        ;
     </script>
 {% endblock %}
 

@@ -16,7 +16,7 @@
                     <div class="shop-list-mid" style="width: 65%;">
                         <div class="tit">
                             <a href="{% url 'com:详情' result.object.pk %}">
-                                {{ result.object.Goods_spu_id.Goods_spu_name }}{{ result.object.Goods_sku_name }}
+                                {{ result.object.Goods_spu_id.Goods_spu_name }}&emsp;{{ result.object.Goods_sku_name }}
                             </a>
                         </div>
                         <div class="am-gallery-desc">￥{{ result.object.Goods_sku_Price }}</div>

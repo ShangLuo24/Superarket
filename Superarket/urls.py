@@ -15,6 +15,7 @@ Including another URLconf
 """
 from django.conf.urls import url, include
 from django.contrib import admin
+from django.views.generic import RedirectView
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
@@ -22,5 +23,6 @@ urlpatterns = [
     url(r'ckeditor', include("ckeditor_uploader.urls")),  # 用户上传的富文本域
     url(r'^user/', include('user.urls', namespace='user')),   # 用户模块
     url(r'^com/', include('commodity.urls', namespace='com')),   # 商品模块
-    url(r'^car/', include('shoppingTrolley.urls', namespace='shop'))  # 购物车模块
+    url(r'^car/', include('shoppingTrolley.urls', namespace='shop')),  # 购物车模块
+    url(r'^favicon.ico$', RedirectView.as_view(url=r'static/favicon.ico'))
 ]

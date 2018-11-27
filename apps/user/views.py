@@ -81,16 +81,24 @@ def login(request):
     :return:
     """
     if request.method == 'POST':
+        # 接收数据
         data = request.POST
         form = RegisterLogin(data)
         if form.is_valid():
+            # 接收清除后的数据
             data = form.cleaned_data
             password_one = data['password']
             password = set_password(password_one)
             one = Username.objects.filter(username=data['account']).first()
+            # 判断保存密码是否相同
             if one.password == password:
                 set_session(request, one)
-                return redirect("com:首页")
+                # 判断是从哪里跳转过来的
+                next = request.GET.get("next")
+                if next:
+                    return redirect(next)
+                else:
+                    return redirect("com:首页")
             else:
                 context = {
                     'errors': '密码错误'

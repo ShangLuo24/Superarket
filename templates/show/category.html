@@ -68,7 +68,7 @@
                         <a href="{% url 'com:详情' good.pk %}"><img src="{{ MEDIA_URL }}{{ good.Goods_sku_Logo }}"
                                                                   class="list-pic"/></a>
                         <div class="shop-list-mid" style="width: 65%;">
-                            <div class="tit"><a href="detail.html">{{ good.Goods_sku_name }}</a></div>
+                            <div class="tit"><a href="{% url 'com:详情' good.pk %}">{{ good.Goods_sku_name }}</a></div>
                             <div class="am-gallery-desc">￥{{ good.Goods_sku_Price }}</div>
                             <p>销量：{{ good.Goods_sku_Sellnum }}{{ good.Goods_sku_Unitinfo.class_unit }}</p>
                         </div>

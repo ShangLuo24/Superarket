@@ -1,11 +1,12 @@
 my.cnf : mysql配置文件
 Superarket : 主文件
-commodity : 商品项目文件
+
 user : 用户信息项目文件
+commodity : 商品项目文件
 shoppingTrolley : 购物车项目文件
 orderForm : 订单项目文件
-个人中心：{
-/index.html         首页
+
+个人中心（ user ）：{
 /member.html， 个人中心
 /infor.html          个人资料
 /gladdress.html  收获地址
@@ -13,6 +14,18 @@ orderForm : 订单项目文件
 /login.html         登录页面
 /forgetpassword.html   修改密码页面
 }
-购物车中心:{
-/shopcart.html  购物车中心
+
+商品页面 ( commodity ) : {
+/categroy.html   商品分类页面
+/detail.html         商品详情页面
+/index.html         首页
+}
+
+购物车中心（ shoppingTrolley ）:{
+/shopper.html     购物车中心
+}
+
+订单项目( orderForm  ){
+/gladdress.html   收货地址
+/address.html      添加收货地址
 }

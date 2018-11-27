@@ -17,12 +17,16 @@ from django.conf.urls import url, include
 from django.contrib import admin
 from django.views.generic import RedirectView
 
+from commodity.views import show
+
 urlpatterns = [
+    url(r'^$', show),  # 首页
     url(r'^admin/', admin.site.urls),
     url(r'^search/', include('haystack.urls')),  # 全文搜索框架
     url(r'ckeditor', include("ckeditor_uploader.urls")),  # 用户上传的富文本域
     url(r'^user/', include('user.urls', namespace='user')),   # 用户模块
     url(r'^com/', include('commodity.urls', namespace='com')),   # 商品模块
     url(r'^car/', include('shoppingTrolley.urls', namespace='shop')),  # 购物车模块
+    url(r'^add/', include('orderForm.urls', namespace='add')),  # 订单模块
     url(r'^favicon.ico$', RedirectView.as_view(url=r'static/favicon.ico'))
 ]

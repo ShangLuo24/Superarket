@@ -58,7 +58,7 @@
             <input type="checkbox" id="chack_all" checked="checked" value="" data-am-ucheck checked>
         </label>
         <a class="del">全选</a>
-        <a href="#" class="js-btn">去结算</a>
+        <a href="{% url 'add:提交' %}" class="js-btn">去结算</a>
         <div class="js-text">
             <P>合计：<b id="one">{{ price }}</b></P>
             <p class="js-car">免费配送</p>
@@ -92,7 +92,7 @@
                 </a>
             </li>
             <li>
-                <a href="allorder.html" class="">
+                <a href="{% url 'add:订单中心' %}" class="">
                     <span class="am-icon-file-text"></span>
                     <span class="am-navbar-label">订单</span>
                 </a>

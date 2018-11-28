@@ -108,7 +108,7 @@ def amendSite(request, id):
             return render(request, "orderForm/addadd.html", context)
 
 
-# 删除或更改默认地址
+# 删除地址
 def deleteAlter(request):
     if request.method == "POST":
         user_id = request.session.get("user_id")
@@ -127,6 +127,7 @@ def deleteAlter(request):
             return redirect("add:地址")
 
 
+# 更改默认地址
 def Alter(request):
     if request.method == "POST":
         user_id = request.session.get("user_id")
@@ -144,3 +145,18 @@ def Alter(request):
             return redirect("user:登录")
         else:
             return redirect("add:地址")
+
+
+# 提交订单
+def submit(request):
+    return render(request, 'orderForm/tureorder.html')
+
+
+# 确认订单
+def notarize(request):
+    return render(request, 'orderForm/order.html')
+
+
+# 订单详情
+def orderForm(request):
+    return  render(request, 'orderForm/allorder.html')

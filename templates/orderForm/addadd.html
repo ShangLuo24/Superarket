@@ -99,7 +99,7 @@
         }
 
         #city {
-            color: #d7d7d7;
+            {#color: #d7d7d7;#}
             width: 100%;
             border: 0;
         }
@@ -114,35 +114,37 @@
             </a>
         </div>
         <h1 class="am-header-title">
-            <a href="" class="">新增收货地址</a>
+            <a href="" class="">修改地址收货地址</a>
         </h1>
     </header>
 {% endblock %}
 
 {% block content %}
     <div style="height: 60px;"></div>
-    <form action="{% url 'add:添加地址' %}" method='post'>
+    <form action="" method='post'>
         {% csrf_token %}
         <ul class="address">
             <li data-role="page" id="test">
-                <span id="city">添加地址</span>
+                <span id="city">{{ all.hcity }}-{{ all.hproper }}-{{ all.harea }}</span>
+                <input type="hidden" name="harea" data-id="820001" id="harea" value="{{ all.harea }}">
+                <input type="hidden" name="hproper" data-id="820001" id="hproper" value="{{ all.hproper }}">
+                <input type="hidden" name="hcity" data-id="820001" id="hcity" value="{{ all.hcity }}">
             </li>
             <p style="color: red; font-size: 14px">{{ form.errors.hcity.0 }}</p>
-            <li><input type="text" name="street" class="add-input" placeholder="街道"/></li>
+            <li><input type="text" name="street" class="add-input" placeholder="{{ all.street }}"/></li>
             <p style="color: red; font-size: 14px">{{ form.errors.street.0 }}</p>
-            <li><input type="text" name="inDetail" class="add-input" placeholder="补充详情"/></li>
+            <li><input type="text" name="inDetail" class="add-input" placeholder="{{ all.inDetail }}"/></li>
             <p style="color: red; font-size: 14px">{{ form.errors.inDetail.0 }}</p>
-            <li><input type="text" name="userName" class="add-input" placeholder="联系人"/></li>
+            <li><input type="text" name="userName" class="add-input" placeholder="{{ all.userName }}"/></li>
             <p style="color: red; font-size: 14px">{{ form.errors.userName.0 }}</p>
-            <li><input type="text" name="telephone" class="add-input" placeholder="联系电话"/></li>
+            <li><input type="text" name="telephone" class="add-input" placeholder="{{ all.telephone }}"/></li>
             <p style="color: red; font-size: 14px">{{ form.errors.telephone.0 }}</p>
         </ul>
         <div class="moren">
             <label class="am-checkbox am-warning">
-                <input type="checkbox" name="default" checked="checked" data-am-ucheck checked>设为默认
+                <input type="checkbox" name="default" {% if all.default %} checked="checked" {% endif %} data-am-ucheck checked>设为默认
             </label>
         </div>
-        <p style="color: red; font-size: 14px; padding-left: 16px;">{{ form.non_field_errors.0 }}</p>
         <input type="submit" class="login-btn" value="确认提交">
     </form>
 {% endblock %}

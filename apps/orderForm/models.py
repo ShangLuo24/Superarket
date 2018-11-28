@@ -1,6 +1,7 @@
 from django.db import models
 from commodity.models import Goods
 from db.base_model import BaseModel
+from user.models import Username
 
 
 class DeliveryAddress(BaseModel):
@@ -16,19 +17,22 @@ class DeliveryAddress(BaseModel):
     详细描述
     是否是默认地址
     """
-    Is_default = (
-        (1, '默认'),
-        (0, '不默认'),
-    )
-    user = models.SmallIntegerField(verbose_name='用户ID')
+    # Is_default = (
+    #     (1, '默认'),
+    #     (0, '不默认'),
+    # )
+    user = models.ForeignKey(to=Username, verbose_name='用户id')
     userName = models.CharField(max_length=50, verbose_name='收货人姓名')
     telephone = models.CharField(max_length=11, verbose_name='电话号码')
-    province = models.CharField(max_length=50, verbose_name='省')
-    city = models.CharField(max_length=50, verbose_name='市')
-    district = models.CharField(max_length=50, verbose_name='区')
+    harea = models.CharField(max_length=50, null=True, blank=True, verbose_name='省')
+    hproper = models.CharField(max_length=50, null=True, blank=True, verbose_name='市')
+    hcity = models.CharField(max_length=50, verbose_name='区')
     street = models.CharField(max_length=50, verbose_name='街道')
     inDetail = models.CharField(max_length=255, verbose_name='详细描述')
-    default = models.BooleanField(choices=Is_default, default=0, verbose_name="默认地址")
+    default = models.BooleanField(default=False, verbose_name="默认地址")
+
+    def __str__(self):
+        return self.userName
 
     class Meta:
         db_table = "DeliveryAddress"
@@ -122,4 +126,3 @@ class TypeShipping(BaseModel):
         db_table = "TypeShipping"
         verbose_name = '运输方式'
         verbose_name_plural = verbose_name
-

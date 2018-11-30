@@ -1,11 +1,16 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.http import JsonResponse
-from orderForm.form import AddressAddForm, AlterAddForm
-from orderForm.models import DeliveryAddress
+from django_redis import get_redis_connection
 
+from commodity.models import Goods
+from orderForm.form import AddressAddForm, AlterAddForm
+from orderForm.models import DeliveryAddress, TypeShipping
 
 # 添加地址
+from user.helper import old_request
+
+
 def address(request):
     """
     添加收货地址
@@ -147,16 +152,58 @@ def Alter(request):
             return redirect("add:地址")
 
 
-# 提交订单
+# 先确认订单
+@old_request
 def submit(request):
-    return render(request, 'orderForm/tureorder.html')
+    if request.method == "POST":
+        return redirect('shop:购物车')
+    else:
+        # 获取登录用户的id
+        user_id = request.session.get("user_id")
+        # 获取地址
+        Address = DeliveryAddress.objects.filter(is_delete=False).order_by('-default').first()
+        telephone = Address.telephone
+        #print(telephone)
+        # 获取商品id,建立radis链接
+        user_id = "User_{}".format(user_id)
+        cnn = get_redis_connection('default')
+        sku_ids = request.GET.getlist("sku_id")
+        # print(sku_ids)
+        goods = []
+        allprice = 0
+        for sku_id in sku_ids:
+            try:
+                sku_id = int(sku_id)
+            except:
+                return redirect("shop:购物车")
+            # 根据id 查询商品Goods
+            good = Goods.objects.get(pk=sku_id, is_delete=False)
+            goods.append(good)
+            # 根据id,查询数量
+            count = cnn.hget(user_id, sku_id)
+            count = int(count)
+            good.count = count
+            # 商品总价格
+            price = count * good.Goods_sku_Price
+            allprice += price
+        # print(goods)
+        # 查询运输方式
+        carriage = TypeShipping.objects.all().order_by('transitCharge')
+        # 渲染到页面
+        contxet = {
+            'Address': Address,
+            'Goods': goods,
+            'carriage': carriage,
+            'allprice': allprice,
+        }
+        return render(request, 'orderForm/tureorder.html', contxet)
 
 
-# 确认订单
+# 后提交订单
 def notarize(request):
     return render(request, 'orderForm/order.html')
 
 
 # 订单详情
 def orderForm(request):
-    return  render(request, 'orderForm/allorder.html')
+    return render(request, 'orderForm/allorder.html')

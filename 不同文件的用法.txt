@@ -28,4 +28,8 @@ orderForm : 订单项目文件
 订单项目( orderForm  ){
 /gladdress.html   收货地址
 /address.html      添加收货地址
+
+/allorder.html	订单中心
+/tureorder.html	确认订单
+/order.html	提交订单
 }

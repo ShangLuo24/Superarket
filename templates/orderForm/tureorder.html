@@ -15,35 +15,53 @@
 
 {% block content %}
     <div style="height: 49px;"></div>
-    <div class="add-address">
-        <a href="address.html">+新建收货地址</a>
-        <i class="am-icon-angle-right"></i>
+    <h5 class="order-tit">收货人信息</h5>
+    <div class="order-name">
+        {% if Address %}
+            <a href="{% url 'add:地址' %}">
+                <p class="order-tele">姓名:&nbsp;{{ Address.userName }}&nbsp;&nbsp;电话:&nbsp;{{ Address.telephone }}</p>
+                <p class="order-add">
+                    {{ Address.hcity }}
+                    {{ Address.hproper }}
+                    {{ Address.harea }}
+                    {{ Address.street }}
+                </p>
+            </a>
+            <i class="am-icon-angle-right"></i>
+        {% else %}
+            <a href="address.html">+新建收货地址</a>
+            <i class="am-icon-angle-right"></i>
+        {% endif %}
     </div>
     <div style="background: #eee; height: 10px;"></div>
+    <h5 class="order-tit">确认订单信息</h5>
     <ul class="shopcart-list" style="padding-bottom: 0;">
-        <li>
-            <img src="{% static 'images/test3.png' %}" class="shop-pic"/>
-            <div class="order-mid">
-                <div class="tit">法国加力果12个装 进口新鲜水果 嘎啦苹果 包邮</div>
-                <div class="order-price">￥169 <i>X2</i></div>
-            </div>
-        </li>
-        <li>
-            <img src="{% static 'images/test3.png' %}" class="shop-pic"/>
-            <div class="order-mid">
-                <div class="tit">法国加力果12个装 进口新鲜水果 嘎啦苹果 包邮</div>
-                <div class="order-price">￥169 <i>X2</i></div>
-            </div>
-        </li>
+        {% for Good in Goods %}
+            <li>
+                <img src="{{ MEDIA_URL }}{{ Good.Goods_sku_Logo }}" class="shop-pic"/>
+                <div class="order-mid">
+                    <div class="tit">{{ Good.Goods_spu_id.Goods_spu_name }}{{ Good.Goods_sku_name }}</div>
+                    <div class="order-price">￥{{ Good.Goods_sku_Price }} <i>X{{ Good.count }}</i></div>
+                </div>
+            </li>
+        {% endfor %}
     </ul>
+    <div style="background: #eee; height: 10px;"></div>
     <ul class="order-infor">
         <li class="order-infor-first">
             <span>商品总计：</span>
-            <i>￥88.00</i>
+            <i>￥<span id="allprice">{{ allprice }}</span></i>
         </li>
         <li class="order-infor-first">
-            <span>运费：</span>
-            <i>包邮</i>
+            <span>运输方式：</span>
+            <i>
+                <select name="transitCharge" id="Charge">
+                    {% for carr in carriage %}
+                        <option value="{{ carr.id }}"
+                                price="{{ carr.transitCharge }}">{{ carr.transit }}-￥{{ carr.transitCharge }}</option>
+                    {% endfor %}
+                </select>
+            </i>
         </li>
         <li class="order-infor-first">
             <a href="">积分抵费></a>
@@ -58,7 +76,7 @@
     <div style="height: 55px;"></div>
     <div class="shop-fix">
         <div class="order-text">
-            应付总额：<span>￥188</span>
+            应付总额：<span id="reality">￥188</span>
         </div>
         <a href="{% url 'add:提交' %}" class="js-btn">提交订单</a>
     </div>
@@ -103,4 +121,26 @@
             </li>
         </ul>
     </div>
+{% endblock %}
+
+{% block food_jss %}
+    <script>
+        $(function () {
+            function transitCharge() {
+                //获取商品总价格
+                var allprice = $("#allprice").text();
+                //获取选中下拉框的自定义属性的值
+                var transitCharge = $("#Charge").find(":selected").attr('price');
+                //计算实际支付价格
+                var number = parseFloat(allprice) + parseFloat(transitCharge);
+                $("#reality").text(number)
+            }
+
+            transitCharge();
+            //当下拉框改变选中值的时候,价格跟着一起改变
+            $('#Charge').on('change', function () {
+                transitCharge()
+            });
+        })
+    </script>
 {% endblock %}

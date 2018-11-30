@@ -17,32 +17,35 @@
 {% block content %}
     <!--购物车空的状态-->
     {% if goods %}
-        <ul class="shopcart-list">
-            {% for good in goods %}
-                <li>
-                    <label class="am-checkbox am-warning">
-                        <input type="checkbox" checked="checked" value="" data-am-ucheck checked>
-                    </label>
-                    <a href="{% url 'com:详情' good.pk %}">
-                        <img src="{{ MEDIA_URL }}{{ good.Goods_sku_Logo }}" class="shop-pic"/>
-                    </a>
-                    <div class="shop-list-mid">
-                        <div class="tit">
-                            <a href="{% url 'com:详情' good.pk %}">{{ good.Goods_spu_id.Goods_spu_name }}&emsp;{{ good.Goods_sku_name }}</a>
+        <form action="{% url 'add:确认' %}" method="get" id="sumber">
+            <ul class="shopcart-list">
+                {% for good in goods %}
+                    <li>
+                        <label class="am-checkbox am-warning">
+                            <input type="checkbox" name="sku_id" checked="checked" value="{{ good.pk }}" data-am-ucheck
+                                   checked>
+                        </label>
+                        <a href="{% url 'com:详情' good.pk %}">
+                            <img src="{{ MEDIA_URL }}{{ good.Goods_sku_Logo }}" class="shop-pic"/>
+                        </a>
+                        <div class="shop-list-mid">
+                            <div class="tit">
+                                <a href="{% url 'com:详情' good.pk %}">{{ good.Goods_spu_id.Goods_spu_name }}&emsp;{{ good.Goods_sku_name }}</a>
+                            </div>
+                            <b class="shop-list-price">￥<span class="price">{{ good.Goods_sku_Price }}</span></b>
                         </div>
-                        <b class="shop-list-price">￥<span class="price">{{ good.Goods_sku_Price }}</span></b>
-                    </div>
-                    <div class="list-cart1">
-                        <div class="d-stock">
-                            <a class="decrease">-</a>
-                            <input readonly="" class="text_box num" name="" type="text" value="{{ good.count }}">
-                            <span style="display:none">{{ good.pk }}</span>
-                            <a class="increase">+</a>
+                        <div class="list-cart1">
+                            <div class="d-stock">
+                                <a class="decrease">-</a>
+                                <input readonly="" class="text_box num" name="" type="text" value="{{ good.count }}">
+                                <span style="display:none">{{ good.pk }}</span>
+                                <a class="increase">+</a>
+                            </div>
                         </div>
-                    </div>
-                </li>
-            {% endfor %}
-        </ul>
+                    </li>
+                {% endfor %}
+            </ul>
+        </form>
     {% else %}
         <div class="login-logo">
             <img src="{% static 'images/care.png' %}">
@@ -53,12 +56,11 @@
 
 
     <div class="shop-fix">
-
         <label class="am-checkbox am-warning">
             <input type="checkbox" id="chack_all" checked="checked" value="" data-am-ucheck checked>
         </label>
         <a class="del">全选</a>
-        <a href="{% url 'add:提交' %}" class="js-btn">去结算</a>
+        <a href="javascript:" id="close" class="js-btn">去结算</a>
         <div class="js-text">
             <P>合计：<b id="one">{{ price }}</b></P>
             <p class="js-car">免费配送</p>
@@ -214,8 +216,40 @@
                 }
                 talou_price();
             });
-        })
-        ;
+
+            //点击触发事件
+            $("#close").on('click', function () {
+                $("#sumber").submit()
+            })
+            //传送徐那种商品ID,数量
+            //$("#close").on("click", function () {
+            //    //console.debug(111);
+            //    // 获取选中的商品,
+            //    var number = $("li").find("input:checked");
+            //    var v2 = $("input[name='csrfmiddlewaretoken']").val();
+            //    var line = [];
+            //    $.each(number, function (i, e) {
+            //        //console.debug(e);
+            //        var num = $(this).val();
+            //        //var name = $(this).attr('name');
+            //        //console.debug(name);
+            //        //数组添加
+            //        line.push(num)
+            //    });
+            //    //var id = line;
+            //    //console.debug(id);
+            //    $.ajax({
+            //        type: 'get',
+            //        url: "",
+            //        traditional: true,
+            //        data: {"sku_ids": line, "csrfmiddlewaretoken": v2},
+            //        dataType: 'json',
+            //        success: function (data) {
+            //            console.debug(data.age)
+            //        }
+            //    });
+            //})
+        });
     </script>
 {% endblock %}
 

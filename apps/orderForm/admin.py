@@ -2,6 +2,7 @@ from django.contrib import admin
 
 # 商品分类表格
 from orderForm.models import DeliveryAddress, Payment, OrderInformation, OrdersGoods, TypeShipping
+from user.models import Username
 
 
 class OrderInformationInline(admin.StackedInline):
@@ -9,9 +10,14 @@ class OrderInformationInline(admin.StackedInline):
     extra = 1
 
 
-class OrdersGoodsInline(admin.StackedInline):
-    model = OrdersGoods  # 该处配置多端表
-    extra = 1
+# class OrdersGoodsInline(admin.StackedInline):
+#     model = OrdersGoods  # 该处配置多端表
+#     extra = 1
+
+
+# class UsernameInline(admin.StackedInline):
+#     model = Username  # 该处配置多端表
+#     extra = 1
 
 
 @admin.register(DeliveryAddress)
@@ -20,7 +26,7 @@ class DeliveryAddressAdmin(admin.ModelAdmin):
     list_per_page = 5
 
     # 设置显示字段
-    list_display = ['id', 'userName', 'telephone', "default"]
+    list_display = ['id', 'userName', 'telephone']
 
     # 在字段上添加一个连接, 能点进去编辑
     list_display_links = ['id', 'userName', 'telephone']
@@ -31,12 +37,12 @@ class DeliveryAddressAdmin(admin.ModelAdmin):
     # 添加搜索框
     search_fields = ['userName']
 
-    # 编辑或者添加的字段
+    # 编辑或者添加的字段 user = m
     fields = ['userName',
               'telephone',
-              'province',
-              'city',
-              'district',
+              'harea',
+              'hproper',
+              'hcity',
               'street',
               'inDetail',
               'default',
@@ -80,10 +86,10 @@ class OrderInformationAdmin(admin.ModelAdmin):
     list_per_page = 5
 
     # 设置显示字段
-    list_display = ['id', 'orderNum', 'orderPrice', 'UserName', 'orderState', 'transitKey', 'PaymentKey']
+    list_display = ['id', 'orderNum', 'orderPrice', 'UserName']
 
     # 在字段上添加一个连接, 能点进去编辑
-    list_display_links = ['id', 'orderNum', 'orderPrice', 'UserName', 'orderState', 'transitKey', 'PaymentKey']
+    list_display_links = ['id', 'orderNum', 'orderPrice', 'UserName']
 
     # 过滤器
     list_filter = ['orderNum']
@@ -92,70 +98,61 @@ class OrderInformationAdmin(admin.ModelAdmin):
     search_fields = ['orderNum']
 
     # 编辑或者添加的字段
-    fields = ['orderNum',
-              'orderPrice',
-              'UserKey',
-              'UserName',
-              'Telephone',
-              'AddressKey',
-              'orderState',
-              'transitKey',
-              'PaymentKey',
-              'money',
+    fields = ["orderNum",
+              "orderPrice",
+              "UserKey",
+              "UserName",
+              "Telephone",
+              "AddressKey",
+              "orderState",
+              "transitKey",
+              "transit_price_Key",
+              "PaymentKey",
+              "money",
               ]
 
-    inlines = [
-        OrdersGoodsInline
-    ]
+    @admin.register(OrdersGoods)
+    class OrdersGoodsAdmin(admin.ModelAdmin):
+        #  每页显示多少项
+        list_per_page = 5
 
+        # 设置显示字段
+        list_display = ['id', 'OrderInformation', 'goodsSku', 'goodsNum', 'goodsPrice']
 
-@admin.register(OrdersGoods)
-class OrdersGoodsAdmin(admin.ModelAdmin):
-    #  每页显示多少项
-    list_per_page = 5
+        # 在字段上添加一个连接, 能点进去编辑
+        list_display_links = ['id', 'OrderInformation', 'goodsSku', 'goodsNum', 'goodsPrice']
 
-    # 设置显示字段
-    list_display = ['id', 'OrderInformation', 'goodsSku', 'goodsNum', 'goodsPrice']
+        # 过滤器
+        list_filter = ['OrderInformation']
 
-    # 在字段上添加一个连接, 能点进去编辑
-    list_display_links = ['id', 'OrderInformation', 'goodsSku', 'goodsNum', 'goodsPrice']
+        # 添加搜索框
+        search_fields = ['OrderInformation']
 
-    # 过滤器
-    list_filter = ['OrderInformation']
+        # 编辑或者添加的字段
+        fields = ['OrderInformation',
+                  'goodsSku',
+                  'goodsNum',
+                  'goodsPrice'
+                  ]
 
-    # 添加搜索框
-    search_fields = ['OrderInformation']
+    @admin.register(TypeShipping)
+    class TypeShippingAdmin(admin.ModelAdmin):
+        #  每页显示多少项
+        list_per_page = 5
 
-    # 编辑或者添加的字段
-    fields = ['OrderInformation',
-              'goodsSku',
-              'goodsNum',
-              'goodsPrice'
-              ]
+        # 设置显示字段
+        list_display = ['id', 'transit', 'transitCharge']
 
+        # 在字段上添加一个连接, 能点进去编辑
+        list_display_links = ['id', 'transit', 'transitCharge']
 
-@admin.register(TypeShipping)
-class TypeShippingAdmin(admin.ModelAdmin):
-    #  每页显示多少项
-    list_per_page = 5
+        # 过滤器
+        list_filter = ['transit']
 
-    # 设置显示字段
-    list_display = ['id', 'transit', 'transitCharge']
+        # 添加搜索框
+        search_fields = ['transit']
 
-    # 在字段上添加一个连接, 能点进去编辑
-    list_display_links = ['id', 'transit', 'transitCharge']
-
-    # 过滤器
-    list_filter = ['transit']
-
-    # 添加搜索框
-    search_fields = ['transit']
-
-    # 编辑或者添加的字段
-    fields = ['transit',
-              'transitCharge'
-              ]
-
-    inlines = [
-        OrderInformationInline
-    ]
+        # 编辑或者添加的字段
+        fields = ['transit',
+                  'transitCharge'
+                  ]

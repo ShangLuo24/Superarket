@@ -88,9 +88,7 @@ def showshopp(request):
     all_num = cnn.hvals(user_id)
     start = 0
     for an in all_num:
-        print(int(an))
         start += int(an)
-    print(start)
     return JsonResponse({'age': 1, "all_num": start})
 
 
@@ -116,7 +114,6 @@ def shopper(request):
         a += (int(price) * int(value))
         apple.count = value
         list.append(apple)
-    print(a)
     context = {
         "goods": list,
         "price": a,

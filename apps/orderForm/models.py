@@ -76,16 +76,17 @@ class OrderInformation(BaseModel):
         (3, '待评价'),
         (4, '已完成'),
     }
-    orderNum = models.CharField(max_length=50, verbose_name='订单编号')
+    orderNum = models.CharField(max_length=50, verbose_name='订单编号', unique=True)
     orderPrice = models.DecimalField(max_digits=9, decimal_places=2, verbose_name='订单价格')
-    UserKey = models.SmallIntegerField(verbose_name='用户ID')
+    UserKey = models.ForeignKey(to=Username, verbose_name='用户ID')
     UserName = models.CharField(max_length=50, verbose_name='收货人姓名')
     Telephone = models.CharField(max_length=11, verbose_name='收货人电话')
     AddressKey = models.ForeignKey(to='DeliveryAddress', on_delete=models.CASCADE, verbose_name='收货地址')
     orderState = models.SmallIntegerField(choices=State, default=0, verbose_name='订单状态')
-    transitKey = models.ForeignKey(to="TypeShipping", on_delete=models.CASCADE, verbose_name='运输方式')
+    transitKey = models.CharField(max_length=50, verbose_name='运输方式')
+    transit_price_Key = models.DecimalField(max_digits=9, decimal_places=2, verbose_name='运输价格')
     PaymentKey = models.ForeignKey(to="Payment", on_delete=models.CASCADE, verbose_name='付款方式')
-    money = models.IntegerField(verbose_name='实际支付')
+    money = models.DecimalField(max_digits=9, decimal_places=2, verbose_name='实际支付')
 
     class Meta:
         db_table = "OrderInformation"

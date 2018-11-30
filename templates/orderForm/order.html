@@ -22,13 +22,16 @@
             </a>
         </div>
         <h1 class="am-header-title">
-            <a href="" class="">确认订单</a>
+            <a href="{% url 'add:地址' %}" class="">确认订单</a>
         </h1>
     </header>
 {% endblock %}
 
 {% block content %}
     <div style="height: 49px;"></div>
+    <ul class="order-detail">
+        <li><span>订单名称：</span>无穷爱辣鸡爪（精品）50g</li>
+    </ul>
     <h5 class="order-tit">收货人信息</h5>
     <div class="order-name">
         <a href="gladdress.html">
@@ -65,16 +68,36 @@
             <i>包邮</i>
         </li>
         <li class="order-infor-first">
-            <a href="integral.html">积分抵费></a>
+            <a href="javascript:">积分抵费></a>
         </li>
         <li class="order-infor-first">
-            <a href="yhq.html">选择优惠券></a>
+            <a href="javascript:">选择优惠券></a>
         </li>
     </ul>
-    <!--<div style="background: #eee; height: 10px;"></div>
 
-    <input id="beginTime" class="select-time" placeholder="请选择配送时间 >" /></div>
-    <div id="datePlugin"></div>-->
+    <h5 class="order-tit">支付方式</h5>
+    <ul class="pay-style">
+        <li>
+            <img src="{% static 'images/zhi.png' %}" width="50"/>
+            <span>
+                    <p>支付宝</p>
+                    <p class="descript">推荐有支付宝账号的用户使用</p>
+                </span>
+            <label class="am-radio-inline">
+                <input type="radio" checked="checked" name="radio10" value="1" data-am-ucheck>
+            </label>
+        </li>
+        <li>
+            <img src="{% static 'images/wei.png' %}" width="50"/>
+            <span>
+                <p>微信支付</p>
+                <p class="descript">推荐安装微信5.0及以上版本的使用</p>
+             </span>
+            <label class="am-radio-inline">
+                <input type="radio" name="radio10" value="1" data-am-ucheck>
+            </label>
+        </li>
+    </ul>
     <div style="background: #eee; height: 10px;"></div>
     <textarea placeholder="备注说明" class="bz-infor"></textarea>
     <div style="background: #eee; height: 10px;"></div>
@@ -83,7 +106,7 @@
         <div class="order-text">
             应付总额：<span>￥188</span>
         </div>
-        <a href="{% url 'add:确认' %}" class="js-btn">提交订单</a>
+        <a href="" class="js-btn">提交订单</a>
     </div>
 {% endblock %}
 
@@ -100,7 +123,7 @@
                 </a>
             </li>
             <li>
-                <a href="#" class="">
+                <a href="javascript:" class="">
                     <span class="am-icon-comments"></span>
                     <span class="am-navbar-label">动态</span>
                 </a>

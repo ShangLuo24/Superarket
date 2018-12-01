@@ -1,5 +1,5 @@
 from django.http import JsonResponse
-from django.shortcuts import render, HttpResponse
+from django.shortcuts import render, HttpResponse, redirect
 from django_redis import get_redis_connection
 
 from commodity.models import Goods
@@ -37,13 +37,18 @@ def shopping(request):
     # 获取商品id 获取商品数量
     number = request.POST.get('number')
     sku_id = request.POST.get('sku_id')
+    print(sku_id)
 
     # 获取商品数量
     try:
         number = int(number)
     except:
         return JsonResponse({'age': 1, 'clue': '数量未选择'})
-    if number > Goods.Goods_sku_Num:
+    goods = Goods.objects.get(pk=sku_id)
+    sku_num = goods.Goods_sku_Num
+    print(type(sku_num))
+    print(type(number))
+    if number > sku_num:
         return JsonResponse({'age': 4, 'clue': '库存不足'})
 
     # 获取商品id
@@ -109,6 +114,8 @@ def shopper(request):
     list = []
     a = 0
     for key, value in apple:
+        key = int(key)
+        # cnn.hdel(user_id, key)
         apple = Goods.objects.get(pk=key)
         price = apple.Goods_sku_Price
         a += (int(price) * int(value))
@@ -118,4 +125,5 @@ def shopper(request):
         "goods": list,
         "price": a,
     }
+    # return redirect("com:首页")
     return render(request, "shopping_trolley/shopcart.html", context)

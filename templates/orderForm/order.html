@@ -21,60 +21,48 @@
                 <i class="am-icon-chevron-left"></i>
             </a>
         </div>
-        <h1 class="am-header-title">
-            <a href="{% url 'add:地址' %}" class="">确认订单</a>
-        </h1>
     </header>
 {% endblock %}
 
 {% block content %}
     <div style="height: 49px;"></div>
     <ul class="order-detail">
-        <li><span>订单名称：</span>无穷爱辣鸡爪（精品）50g</li>
+        <li><span>订单名称：</span>电子产品</li>
     </ul>
     <h5 class="order-tit">收货人信息</h5>
     <div class="order-name">
-        <a href="gladdress.html">
-            <p class="order-tele">宋科&nbsp;&nbsp;&nbsp;15180163170</p>
-            <p class="order-add">江西省南昌市 青云谱区解放西路258号</p>
+        <a href="javascript:">
+            <p class="order-tele">{{ order.UserName }}&nbsp;&nbsp;&nbsp;{{ order.Telephone }}</p>
+            <p class="order-add">
+                {{ order.AddressKey.hcity }}{{ order.AddressKey.hproper }}{{ order.AddressKey.harea }}</p>
         </a>
-        <i class="am-icon-angle-right"></i>
     </div>
     <div style="background: #eee; height: 10px;"></div>
-    <h5 class="order-tit">确认订单信息</h5>
+    <h5 class="order-tit">订单信息</h5>
     <ul class="shopcart-list" style="padding-bottom: 0; margin-top: 0;">
-        <li>
-            <img src="{% static 'images/test3.png' %}" class="shop-pic"/>
-            <div class="order-mid">
-                <div class="tit">法国加力果12个装 进口新鲜水果 嘎啦苹果 包邮</div>
-                <div class="order-price">￥169 <i>X2</i></div>
-            </div>
-        </li>
-        <li>
-            <img src="{% static 'images/test3.png' %}" class="shop-pic"/>
-            <div class="order-mid">
-                <div class="tit">法国加力果12个装 进口新鲜水果 嘎啦苹果 包邮</div>
-                <div class="order-price">￥169 <i>X2</i></div>
-            </div>
-        </li>
+        {% for one in order.ordersgoods_set.all %}
+            <li>
+                <img src="{{ MEDIA_URL }}{{ one.goodsSku.Goods_sku_Logo }}" class="shop-pic"/>
+                <div class="order-mid">
+                    <div class="tit">
+                        {{ one.goodsSku.Goods_spu_id.Goods_spu_name }}{{ one.goodsSku.Goods_sku_name }}</div>
+                    <div class="order-price">
+                        ￥{{ one.goodsPrice }}<i>X{{ one.goodsNum }}</i>
+                    </div>
+                </div>
+            </li>
+        {% endfor %}
     </ul>
     <ul class="order-infor">
         <li class="order-infor-first">
             <span>商品总计：</span>
-            <i>￥88.00</i>
+            <i>￥{{ order.orderPrice }}</i>
         </li>
         <li class="order-infor-first">
-            <span>运费：</span>
-            <i>包邮</i>
-        </li>
-        <li class="order-infor-first">
-            <a href="javascript:">积分抵费></a>
-        </li>
-        <li class="order-infor-first">
-            <a href="javascript:">选择优惠券></a>
+            <span>运输方式：</span>
+            <i>{{ order.transitKey }}</i>
         </li>
     </ul>
-
     <h5 class="order-tit">支付方式</h5>
     <ul class="pay-style">
         <li>
@@ -104,9 +92,9 @@
     <div style="height: 55px;"></div>
     <div class="shop-fix">
         <div class="order-text">
-            应付总额：<span>￥188</span>
+            应付总额：<span>￥{{ price }}</span>
         </div>
-        <a href="" class="js-btn">提交订单</a>
+        <a href="" class="js-btn">确认支付</a>
     </div>
 {% endblock %}
 

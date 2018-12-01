@@ -15,61 +15,67 @@
 
 {% block content %}
     <div style="height: 49px;"></div>
-    <h5 class="order-tit">收货人信息</h5>
-    <div class="order-name">
-        {% if Address %}
-            <a href="{% url 'add:地址' %}">
-                <p class="order-tele">姓名:&nbsp;{{ Address.userName }}&nbsp;&nbsp;电话:&nbsp;{{ Address.telephone }}</p>
-                <p class="order-add">
-                    {{ Address.hcity }}
-                    {{ Address.hproper }}
-                    {{ Address.harea }}
-                    {{ Address.street }}
-                </p>
-            </a>
-            <i class="am-icon-angle-right"></i>
-        {% else %}
-            <a href="address.html">+新建收货地址</a>
-            <i class="am-icon-angle-right"></i>
-        {% endif %}
-    </div>
-    <div style="background: #eee; height: 10px;"></div>
-    <h5 class="order-tit">确认订单信息</h5>
-    <ul class="shopcart-list" style="padding-bottom: 0;">
-        {% for Good in Goods %}
-            <li>
-                <img src="{{ MEDIA_URL }}{{ Good.Goods_sku_Logo }}" class="shop-pic"/>
-                <div class="order-mid">
-                    <div class="tit">{{ Good.Goods_spu_id.Goods_spu_name }}{{ Good.Goods_sku_name }}</div>
-                    <div class="order-price">￥{{ Good.Goods_sku_Price }} <i>X{{ Good.count }}</i></div>
-                </div>
+    <form action="" id="form">
+        <h5 class="order-tit">收货人信息</h5>
+        <div class="order-name">
+            {% if Address %}
+                <input type="hidden" name="address" value="{{ Address.id }}">
+                <a href="{% url 'add:地址' %}">
+                    <p class="order-tele">
+                        姓名:&nbsp;{{ Address.userName }}&nbsp;&nbsp;电话:&nbsp;{{ Address.telephone }}</p>
+                    <p class="order-add">
+                        {{ Address.hcity }}
+                        {{ Address.hproper }}
+                        {{ Address.harea }}
+                        {{ Address.street }}
+                    </p>
+                </a>
+                <i class="am-icon-angle-right"></i>
+            {% else %}
+                <a href="address.html">+新建收货地址</a>
+                <i class="am-icon-angle-right"></i>
+            {% endif %}
+        </div>
+        <div style="background: #eee; height: 10px;"></div>
+        <h5 class="order-tit">确认订单信息</h5>
+        <ul class="shopcart-list" style="padding-bottom: 0;">
+            {% for Good in Goods %}
+                <li>
+                    <input type="hidden" name="sku_id" value="{{ Good.id }}">
+                    <img src="{{ MEDIA_URL }}{{ Good.Goods_sku_Logo }}" class="shop-pic"/>
+                    <div class="order-mid">
+                        <div class="tit">{{ Good.Goods_spu_id.Goods_spu_name }}{{ Good.Goods_sku_name }}</div>
+                        <div class="order-price">￥{{ Good.Goods_sku_Price }} <i>X{{ Good.count }}</i></div>
+                    </div>
+                </li>
+            {% endfor %}
+        </ul>
+        <div style="background: #eee; height: 10px;"></div>
+        <ul class="order-infor">
+            <li class="order-infor-first">
+                <span>商品总计：</span>
+                <i>￥<span id="allprice">{{ allprice }}</span></i>
             </li>
-        {% endfor %}
-    </ul>
-    <div style="background: #eee; height: 10px;"></div>
-    <ul class="order-infor">
-        <li class="order-infor-first">
-            <span>商品总计：</span>
-            <i>￥<span id="allprice">{{ allprice }}</span></i>
-        </li>
-        <li class="order-infor-first">
-            <span>运输方式：</span>
-            <i>
-                <select name="transitCharge" id="Charge">
-                    {% for carr in carriage %}
-                        <option value="{{ carr.id }}"
-                                price="{{ carr.transitCharge }}">{{ carr.transit }}-￥{{ carr.transitCharge }}</option>
-                    {% endfor %}
-                </select>
-            </i>
-        </li>
-        <li class="order-infor-first">
-            <a href="">积分抵费></a>
-        </li>
-        <li class="order-infor-first">
-            <a href="">选择优惠券></a>
-        </li>
-    </ul>
+            <li class="order-infor-first">
+                <span>运输方式：</span>
+                <i>
+                    <select name="carriage" id="Charge">
+                        {% for carr in carriage %}
+                            <option value="{{ carr.id }}"
+                                    price="{{ carr.transitCharge }}">{{ carr.transit }}-￥{{ carr.transitCharge }}</option>
+                        {% endfor %}
+                    </select>
+                </i>
+            </li>
+            <li class="order-infor-first">
+                <a href="">积分抵费></a>
+            </li>
+            <li class="order-infor-first">
+                <a href="">选择优惠券></a>
+            </li>
+        </ul>
+        {% csrf_token %}
+    </form>
     <div style="background: #eee; height: 10px;"></div>
     <textarea placeholder="备注说明" class="bz-infor"></textarea>
     <div style="background: #eee; height: 10px;"></div>
@@ -78,7 +84,7 @@
         <div class="order-text">
             应付总额：<span id="reality">￥188</span>
         </div>
-        <a href="{% url 'add:提交' %}" class="js-btn">提交订单</a>
+        <a href="javascript:" class="js-btn" id="refer">提交订单</a>
     </div>
 {% endblock %}
 
@@ -141,6 +147,25 @@
             $('#Charge').on('change', function () {
                 transitCharge()
             });
-        })
+
+            //传送确认订单必须要的地址id, 商品id, 运输方式id
+            $('#refer').on('click', function () {
+                //获取form表单里面的值
+                var data = $('#form').serialize();
+                $.ajax({
+                    type: 'POST',
+                    url: '{% url 'add:保存' %}',
+                    data: data,
+                    dataType: 'json',
+                    success: function (data) {
+                        if (data.age == 0) {
+                            location.href = "{% url 'add:提交' %}?orderNum=" + data.orderNum
+                        } else {
+                            alert("订单创建失败")
+                        }
+                    }
+                })
+            })
+        });
     </script>
 {% endblock %}

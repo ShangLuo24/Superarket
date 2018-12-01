@@ -203,3 +203,10 @@ class Division(BaseModel):
         db_table = "Division"
         verbose_name = '首页专区活动商品表'
         verbose_name_plural = verbose_name
+
+
+# class Time(BaseModel):
+#     name = models.CharField(max_length=50, verbose_name="首页活动名字")
+#
+#     def __str__(self):
+#         return self.name

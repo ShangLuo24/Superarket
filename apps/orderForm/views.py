@@ -1,16 +1,17 @@
+from datetime import datetime
+
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.http import JsonResponse
 from django_redis import get_redis_connection
-
+import random
 from commodity.models import Goods
 from orderForm.form import AddressAddForm, AlterAddForm
-from orderForm.models import DeliveryAddress, TypeShipping
-
-# 添加地址
+from orderForm.models import DeliveryAddress, TypeShipping, OrderInformation, OrdersGoods
 from user.helper import old_request
 
 
+# 添加地址
 def address(request):
     """
     添加收货地址
@@ -162,8 +163,6 @@ def submit(request):
         user_id = request.session.get("user_id")
         # 获取地址
         Address = DeliveryAddress.objects.filter(is_delete=False).order_by('-default').first()
-        telephone = Address.telephone
-        #print(telephone)
         # 获取商品id,建立radis链接
         user_id = "User_{}".format(user_id)
         cnn = get_redis_connection('default')
@@ -200,10 +199,192 @@ def submit(request):
 
 
 # 后提交订单
+@old_request
 def notarize(request):
-    return render(request, 'orderForm/order.html')
+    # 接收传递过来的订单信息,查询数据库信息
+    orderNum = request.GET.get("orderNum")
+    order = OrderInformation.objects.get(orderNum=orderNum)
+    # 计算总金额
+    sku_price = order.orderPrice
+    transit_price_Key = order.transit_price_Key
+    price = sku_price + transit_price_Key
+
+    goods = order.ordersgoods_set.all()
+    for one in goods:
+        one.goodsPrice
+    contxet ={
+        "order": order,
+        'price': price
+    }
+    return render(request, 'orderForm/order.html', contxet)
+
+
+# 存储确认后的订单信息
+def seve(request):
+    if request.method == 'POST':
+        user_id = request.session.get("user_id")
+        # 接收传递过来的地址id, 商品id, 运输方式id
+        address_id = request.POST.get("address")
+        sku_ids = request.POST.getlist("sku_id")
+        carriage_id = request.POST.get("carriage")
+
+        # 判断地址id是否是整数
+        try:
+            address_id = int(address_id)
+        except:
+            return JsonResponse({"age": 1, "matter": '地址参数错误'})
+        # 查询地址id是否存在
+        try:
+            address = DeliveryAddress.objects.get(pk=address_id)
+        except DeliveryAddress.DoesNotExist:
+            return JsonResponse({"age": 2, "matter": '地址不存在'})
+
+        # 判断商品id是否是整数
+        try:
+            sku_intid = [int(sku_id) for sku_id in sku_ids]
+        except:
+            return JsonResponse({"age": 3, "matter": '商品参数错误'})
+
+        # 判断商品是否存在
+        for sku_id in sku_intid:
+            try:
+                Goods.objects.get(pk=sku_id)
+            except Goods.DoesNotExist:
+                return JsonResponse({"age": 4, "matter": '商品不存在'})
+
+        # 判断运输方式id是否是整数
+        try:
+            carriage_id = int(carriage_id)
+        except:
+            return JsonResponse({"age": 5, "matter": '运输参数错误'})
+
+        # 判断运输方式是否存在
+        try:
+            shopp = TypeShipping.objects.get(pk=carriage_id)
+        except TypeShipping.DoesNotExist:
+            return JsonResponse({"age": 6, "matter": '运输方式不存在'})
+
+        # 保存数据到订单信息表内,先准备需要的字段的值
+        #
+        #     订单金额
+        #     用户ID
+        #     收货人姓名
+        #     收货人电话
+        #     收货地址id
+        #     订单状态
+        #     运输方式
+        #     付款id
+        #     实付金额
+
+        # 订单编号:随机在A-Z中选取一个大写英文字母 大写字母,年月日,随机数
+        try:
+            number = "{}{}{}".format(datetime.now().strftime('%Y%m%d%H%M%S'), user_id, (random.randint(10000, 99999)))
+        except:
+            return JsonResponse({"age": 7, "matter": '生成订单号错误'})
+        # 用户ID
+        # print(orderNum)
+        # UserKey = user_id
+        # # 收货人姓名
+        # UserName = address.userName
+        # # 收货人电话
+        # Telephone = address.telephone
+        # # 收货地址id
+        # AddressKey = address.pk
+        # # 运输方式
+        # transitKey = shopp.transit
+        # # 运输价格
+        # transit_price_Key = shopp.transitCharge
+        # print(number)
+        # print(UserKey)
+        # print(UserName)
+        # print(Telephone)
+        # print(AddressKey)
+        # print(transitKey)
+        # print(transit_price_Key)
+
+        # 保存数值
+        try:
+            information = OrderInformation.objects.create(
+                orderNum=number,
+                UserKey_id=user_id,
+                UserName=address.userName,
+                Telephone=address.telephone,
+                AddressKey_id=address.pk,
+                transitKey=shopp.transit,
+                transit_price_Key=shopp.transitCharge,
+            )
+        except:
+            return JsonResponse({"age": 8, "matter": '保存订单信息出错'})
+
+        # 链接radis
+        try:
+            # 建立连接
+            cnn = get_redis_connection('default')
+            # 准备key
+            user_id = "User_{}".format(user_id)
+        except:
+            return JsonResponse({"age": 9, "matter": '建立radis错误'})
+        # 准备总金额
+        allprice = 0
+        # 保存订单商品信息,查询数量
+        for sku_id in sku_intid:
+            try:
+                goods = Goods.objects.get(pk=sku_id, is_delete=False, Goods_sku_Is_putaway=1)
+            except Goods.DoesNotExist:
+                return JsonResponse({"age": 10, "matter": '商品不存在'})
+
+            # 获取购物车的数量
+            try:
+                count = cnn.hget(user_id, sku_id)
+                count = int(count)
+            except:
+                return JsonResponse({"age": 11, "matter": '获取数量错误'})
+
+            # 判断库存
+            if goods.Goods_sku_Num < count:
+                return JsonResponse({"age": 12, "matter": '商品数量不足'})
+
+            # 保存再订单商品表
+            try:
+                OrdersGoods.objects.create(
+                    OrderInformation=information,
+                    goodsSku=goods,
+                    goodsNum=count,
+                    goodsPrice=goods.Goods_sku_Price,
+                )
+            except:
+                return JsonResponse({"age": 13, "matter": '保存订单商品失败'})
+
+            # 销量增加, 库存减少
+            try:
+                goods.Goods_sku_Sellnum += count
+                goods.Goods_sku_Num -= count
+                goods.save()
+            except:
+                return JsonResponse({"age": 14, "matter": '库存销量修改失败'})
+
+            # 计算总价格
+            allprice += count * goods.Goods_sku_Price
+
+        # 计算商品总金额
+        try:
+            information.orderPrice = allprice
+            information.save()
+        except:
+            return JsonResponse({"age": 15, "matter": '保存商品总金额失败'})
+
+        # 删除rides的数据
+        try:
+            cnn.hdel(user_id, *sku_intid)
+        except:
+            return JsonResponse({"age": 16, "matter": '删除radis错误'})
+        # 保存成功
+        return JsonResponse({"age": 0, "matter": '保存商品信息成功', 'orderNum': number})
+    else:
+        return JsonResponse({"age": 0, "matter": '保存商品信息成功'})
 
 
 # 订单详情
+@old_request
 def orderForm(request):
     return render(request, 'orderForm/allorder.html')

@@ -153,7 +153,6 @@ def member(request):
     user_id = request.session.get("user_id")
     data = Username.objects.filter(pk=user_id).first()
     head = request.session.get("user_head")
-    # print(head)
     if data.nickname is None:
         context = {
             'user_nickname': data.username,
@@ -223,3 +222,9 @@ def infor(request):
             'data': data
         }
         return render(request, 'personal/infor.html', context)
+
+
+@old_request
+def delete(request):
+    request.session.clear()
+    return redirect("user:登录")

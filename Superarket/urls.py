@@ -15,12 +15,13 @@ Including another URLconf
 """
 from django.conf.urls import url, include
 from django.contrib import admin
+from django.views.decorators.cache import cache_page
 from django.views.generic import RedirectView
 
 from commodity.views import show
 
 urlpatterns = [
-    url(r'^$', show),  # 首页
+    url(r'^$', cache_page(3600)(show)),  # 缓存到redis中首页
     url(r'^admin/', admin.site.urls),
     url(r'^search/', include('haystack.urls')),  # 全文搜索框架
     url(r'ckeditor', include("ckeditor_uploader.urls")),  # 用户上传的富文本域

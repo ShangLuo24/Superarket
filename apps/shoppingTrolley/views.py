@@ -37,7 +37,7 @@ def shopping(request):
     # 获取商品id 获取商品数量
     number = request.POST.get('number')
     sku_id = request.POST.get('sku_id')
-    print(sku_id)
+    # print(sku_id)
 
     # 获取商品数量
     try:
@@ -46,8 +46,8 @@ def shopping(request):
         return JsonResponse({'age': 1, 'clue': '数量未选择'})
     goods = Goods.objects.get(pk=sku_id)
     sku_num = goods.Goods_sku_Num
-    print(type(sku_num))
-    print(type(number))
+    # print(type(sku_num))
+    # print(type(number))
     if number > sku_num:
         return JsonResponse({'age': 4, 'clue': '库存不足'})
 

@@ -35,7 +35,11 @@
             </li>
             <li>
                 <i>昵称</i>
-                <input type="text" class="infor-tele" name="nickname" value="{{ data.nickname }}" placeholder="昵称"/>
+                <input type="text" class="infor-tele" name="nickname" {% if data.nickname %}
+                       value="{{ data.nickname }}"
+                {% else %}
+                       placeholder="昵称"
+                {% endif %} />
             </li>
             <li>
                 <i>性别</i>
@@ -55,7 +59,6 @@
                             <input type="radio" name="sex" checked="checked" value="2" data-am-ucheck>女
                         </label>
                     {% endif %}
-
                 </i>
             </li>
             <li>
@@ -68,26 +71,45 @@
         <ul class="safty1">
             <li>
                 <i>学校</i>
-                <input type="text" class="infor-tele" name="school" value="{{ data.school }}" placeholder="就读于哪个学校"/>
+                <input type="text" class="infor-tele" name="school"
+                        {% if data.school %}
+                       value="{{ data.school }}"
+                        {% else %}
+                       placeholder="就读于哪个学校"
+                        {% endif %} />
             </li>
             <li>
                 <i>位置</i>
-                <input type="text" class="infor-tele" name="location" value="{{ data.location }}" placeholder="详细地址"/>
+                <input type="text" class="infor-tele" name="location"
+                        {% if data.location %}
+                       value="{{ data.location }}"
+                        {% else %}
+                       placeholder="详细地址"
+                        {% endif %} />
             </li>
             <li>
                 <i>故乡</i>
-                <input type="text" class="infor-tele" name="nativePlace" value="{{ data.nativePlace }}"
-                       placeholder="老家"/>
+                <input type="text" class="infor-tele" name="nativePlace"
+                        {% if data.nickname %}
+                       value="{{ data.nativePlace }}"
+                        {% else %}
+                       placeholder="老家"
+                        {% endif %}
+                />
             </li>
             <li>
                 <i>手机</i>
-                <input type="text" class="infor-tele" name="telephone" value="{{ data.telephone }}"
-                       placeholder="联系电话"/>
+                <input type="text" class="infor-tele" name="telephone"
+                        {% if data.telephone %}
+                       value="{{ data.telephone }}"
+                        {% else %}
+                       placeholder="联系电话"
+                        {% endif %}
+                />
             </li>
         </ul>
         <input type="submit" class="login-btn" value="确认提交">
         <a href="{% url 'user:个人中心' %}"><input type="button" class="login-btn" value="返回个人中心"></a>
     </form>
-
 {% endblock %}
 

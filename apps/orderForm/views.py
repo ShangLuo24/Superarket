@@ -1,8 +1,7 @@
 from datetime import datetime
-
 from alipay import AliPay
+from django.db import transaction
 from django.shortcuts import render, redirect
-from django.http import HttpResponse
 from django.http import JsonResponse
 from django_redis import get_redis_connection
 import random
@@ -12,8 +11,8 @@ from orderForm.form import AddressAddForm, AlterAddForm
 from orderForm.models import DeliveryAddress, TypeShipping, OrderInformation, OrdersGoods
 from user.helper import old_request
 import os
-import io
 import time
+from django.http import HttpResponse
 
 
 # 添加地址
@@ -73,7 +72,7 @@ def gladd(request):
         return redirect("user:个人中心")
 
 
-# 删除地址
+# 修改地址
 def amendSite(request, id):
     """
     修改地址
@@ -203,28 +202,8 @@ def submit(request):
         return render(request, 'orderForm/tureorder.html', contxet)
 
 
-# 后提交订单
-@old_request
-def notarize(request):
-    # 接收传递过来的订单信息,查询数据库信息
-    orderNum = request.GET.get("orderNum")
-    order = OrderInformation.objects.get(orderNum=orderNum)
-    # 计算总金额
-    sku_price = order.orderPrice
-    transit_price_Key = order.transit_price_Key
-    price = sku_price + transit_price_Key
-    # 保存总金额
-    order.money = price
-    order.save()
-    # 传参数
-    context = {
-        "order": order,
-        'price': price
-    }
-    return render(request, 'orderForm/order.html', context)
-
-
 # 存储确认后的订单信息
+@transaction.atomic
 def seve(request):
     if request.method == 'POST':
         user_id = request.session.get("user_id")
@@ -307,6 +286,8 @@ def seve(request):
         # print(transitKey)
         # print(transit_price_Key)
 
+        # 生成事务
+        sid = transaction.savepoint()
         # 保存数值
         try:
             information = OrderInformation.objects.create(
@@ -319,6 +300,8 @@ def seve(request):
                 transit_price_Key=shopp.transitCharge,
             )
         except:
+            # 回滚事务
+            transaction.savepoint_rollback(sid)
             return JsonResponse({"age": 8, "matter": '保存订单信息出错'})
 
         # 链接radis
@@ -358,6 +341,8 @@ def seve(request):
                     goodsPrice=goods.Goods_sku_Price,
                 )
             except:
+                # 回滚事务
+                transaction.savepoint_rollback(sid)
                 return JsonResponse({"age": 13, "matter": '保存订单商品失败'})
 
             # 销量增加, 库存减少
@@ -366,6 +351,8 @@ def seve(request):
                 goods.Goods_sku_Num -= count
                 goods.save()
             except:
+                # 回滚事务
+                transaction.savepoint_rollback(sid)
                 return JsonResponse({"age": 14, "matter": '库存销量修改失败'})
 
             # 计算总价格
@@ -382,11 +369,36 @@ def seve(request):
         try:
             cnn.hdel(user_id, *sku_intid)
         except:
+            # 回滚事务
+            transaction.savepoint_rollback(sid)
             return JsonResponse({"age": 16, "matter": '删除radis错误'})
+
+        transaction.savepoint_commit(sid)
         # 保存成功
         return JsonResponse({"age": 0, "matter": '保存商品信息成功', 'orderNum': number})
     else:
         return JsonResponse({"age": 0, "matter": '保存商品信息成功'})
+
+
+# 后提交订单
+@old_request
+def notarize(request):
+    # 接收传递过来的订单信息,查询数据库信息
+    orderNum = request.GET.get("orderNum")
+    order = OrderInformation.objects.get(orderNum=orderNum)
+    # 计算总金额
+    sku_price = order.orderPrice
+    transit_price_Key = order.transit_price_Key
+    price = sku_price + transit_price_Key
+    # 保存总金额
+    order.money = price
+    order.save()
+    # 传参数
+    context = {
+        "order": order,
+        'price': price
+    }
+    return render(request, 'orderForm/order.html', context)
 
 
 # 订单详情
@@ -433,7 +445,7 @@ def pay(request):
         out_trade_no=orderNum,
         total_amount=str(money),
         subject="订单描述内容",
-        return_url="http://127.0.0.1:8088/add/pay_all",  # 返回地址
+        return_url="http://127.0.0.1:8088/add/pay_all/?",  # 返回地址
         notify_url=None  # 可选, 不填则使用默认notify url
     )
     return redirect("https://openapi.alipaydev.com/gateway.do?{}".format(order_string))
@@ -442,8 +454,9 @@ def pay(request):
 # 返回的页面
 def pay_all(request):
     # 验证支付
-    # 初始化 唯一密钥
+
     if request.method == 'GET':
+        # 初始化 唯一密钥
         app_private_key_string = open(os.path.join(settings.BASE_DIR, 'apps/orderForm/public_key.text')).read()
         # 公开密钥
         alipay_public_key_string = open(os.path.join(settings.BASE_DIR, 'apps/orderForm/ali_public_key.text')).read()
@@ -460,30 +473,30 @@ def pay_all(request):
 
         user_id = request.session.get("user_id")
         out_trade_no = request.GET.get("out_trade_no")
-        # try:
-        paid = False
-        for i in range(10):
-            result = alipay.api_alipay_trade_query(out_trade_no=out_trade_no)
-            if result.get("trade_status", "") == "TRADE_SUCCESS":
-                paid = True
-                break
-            else:
-                time.sleep(3)
+        try:
+            paid = False
+            for i in range(10):
+                result = alipay.api_alipay_trade_query(out_trade_no)
+                if result.get("trade_status", "") == "TRADE_SUCCESS":
+                    paid = True
+                    break
+                else:
+                    time.sleep(3)
 
-        if paid is False:
-            context = {
-                "error": '付款失败'
-            }
-        else:
-            # 支付成功,修改支付状态
-            OrderInformation.objects.filter(orderNum=out_trade_no, UserKey=user_id).update(orderState=1)
+            if paid is False:
+                context = {
+                    "error": '付款失败'
+                }
+            else:
+                # 支付成功,修改支付状态
+                OrderInformation.objects.filter(orderNum=out_trade_no, UserKey=user_id).update(orderState=1)
+                context = {
+                    "error": '付款成功'
+                }
+        except:
             context = {
                 "error": '付款成功'
             }
-        # except:
-        #     context = {
-        #         "error": '付款失败'
-        #     }
         return render(request, 'orderForm/pay.html', context)
     else:
         return redirect("shop:购物车")

@@ -1,14 +1,19 @@
 from datetime import datetime
 
+from alipay import AliPay
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.http import JsonResponse
 from django_redis import get_redis_connection
 import random
+from Superarket import settings
 from commodity.models import Goods
 from orderForm.form import AddressAddForm, AlterAddForm
 from orderForm.models import DeliveryAddress, TypeShipping, OrderInformation, OrdersGoods
 from user.helper import old_request
+import os
+import io
+import time
 
 
 # 添加地址
@@ -208,15 +213,15 @@ def notarize(request):
     sku_price = order.orderPrice
     transit_price_Key = order.transit_price_Key
     price = sku_price + transit_price_Key
-
-    goods = order.ordersgoods_set.all()
-    for one in goods:
-        one.goodsPrice
-    contxet ={
+    # 保存总金额
+    order.money = price
+    order.save()
+    # 传参数
+    context = {
         "order": order,
         'price': price
     }
-    return render(request, 'orderForm/order.html', contxet)
+    return render(request, 'orderForm/order.html', context)
 
 
 # 存储确认后的订单信息
@@ -388,3 +393,97 @@ def seve(request):
 @old_request
 def orderForm(request):
     return render(request, 'orderForm/allorder.html')
+
+
+# 支付过程
+@old_request
+def pay(request):
+    # 验证用户是否登录
+    if not request.session.get("user_id"):
+        return redirect('com:首页')
+
+    # 获取用户id
+    user_id = request.session.get("user_id")
+    # 查询订单总金额,筛选该用户当前未支付的指定订单号的商品表
+    try:
+        orderNum = request.GET.get("orderNum")
+    except:
+        return redirect('com:首页')
+    # print(orderNum)
+    order = OrderInformation.objects.get(orderNum=orderNum, UserKey=user_id, orderState=0)
+    money = order.money
+    order.save()
+    # 初始化 唯一密钥
+    app_private_key_string = open(os.path.join(settings.BASE_DIR, 'apps/orderForm/public_key.text')).read()
+    # 公开密钥
+    alipay_public_key_string = open(os.path.join(settings.BASE_DIR, 'apps/orderForm/ali_public_key.text')).read()
+
+    alipay = AliPay(
+        appid="2016092300577288",
+        app_notify_url=None,  # 默认回调url
+        app_private_key_string=app_private_key_string,
+        # 支付宝的公钥，验证支付宝回传消息使用，不是你自己的公钥,
+        alipay_public_key_string=alipay_public_key_string,
+        sign_type="RSA2",  # RSA 或者 RSA2
+        debug=True,  # 默认False
+    )
+
+    # 发起支付
+    order_string = alipay.api_alipay_trade_wap_pay(
+        out_trade_no=orderNum,
+        total_amount=str(money),
+        subject="订单描述内容",
+        return_url="http://127.0.0.1:8088/add/pay_all",  # 返回地址
+        notify_url=None  # 可选, 不填则使用默认notify url
+    )
+    return redirect("https://openapi.alipaydev.com/gateway.do?{}".format(order_string))
+
+
+# 返回的页面
+def pay_all(request):
+    # 验证支付
+    # 初始化 唯一密钥
+    if request.method == 'GET':
+        app_private_key_string = open(os.path.join(settings.BASE_DIR, 'apps/orderForm/public_key.text')).read()
+        # 公开密钥
+        alipay_public_key_string = open(os.path.join(settings.BASE_DIR, 'apps/orderForm/ali_public_key.text')).read()
+
+        alipay = AliPay(
+            appid="2016092300577288",
+            app_notify_url=None,  # 默认回调url
+            app_private_key_string=app_private_key_string,
+            # 支付宝的公钥，验证支付宝回传消息使用，不是你自己的公钥,
+            alipay_public_key_string=alipay_public_key_string,
+            sign_type="RSA2",  # RSA 或者 RSA2
+            debug=True,  # 默认False
+        )
+
+        user_id = request.session.get("user_id")
+        out_trade_no = request.GET.get("out_trade_no")
+        # try:
+        paid = False
+        for i in range(10):
+            result = alipay.api_alipay_trade_query(out_trade_no=out_trade_no)
+            if result.get("trade_status", "") == "TRADE_SUCCESS":
+                paid = True
+                break
+            else:
+                time.sleep(3)
+
+        if paid is False:
+            context = {
+                "error": '付款失败'
+            }
+        else:
+            # 支付成功,修改支付状态
+            OrderInformation.objects.filter(orderNum=out_trade_no, UserKey=user_id).update(orderState=1)
+            context = {
+                "error": '付款成功'
+            }
+        # except:
+        #     context = {
+        #         "error": '付款失败'
+        #     }
+        return render(request, 'orderForm/pay.html', context)
+    else:
+        return redirect("shop:购物车")

@@ -94,7 +94,7 @@
         <div class="order-text">
             应付总额：<span>￥{{ price }}</span>
         </div>
-        <a href="" class="js-btn">确认支付</a>
+        <a href="{% url 'add:支付' %}?orderNum={{ order.orderNum }}" class="js-btn">确认支付</a>
     </div>
 {% endblock %}
 
